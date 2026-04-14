@@ -176,7 +176,7 @@ export default function Videos() {
             <h1 className="text-4xl font-bold tracking-tight md:text-5xl">Videos</h1>
             <div className="mt-4 flex items-center gap-3">
               <div className="h-px w-8 bg-white/18" />
-              <p className="text-sm text-white/35">Motion graphics, films, and edits.</p>
+              <p className="text-sm text-white/35">Commercial Ads, Cinematics, and Edits.</p>
             </div>
           </div>
 

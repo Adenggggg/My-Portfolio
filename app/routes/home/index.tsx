@@ -1,11 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // ─── Config ───────────────────────────────────────────────────
 const GITHUB_USERNAME = "Adenggggg";
 
 // ─── Types ────────────────────────────────────────────────────
 type GitHubStats = { repos: number; followers: number; following: number };
-type Repo = { id: number; name: string; description: string | null; html_url: string; homepage: string | null; stargazers_count: number; language: string | null };
+type Repo = {
+  id: number; name: string; description: string | null;
+  html_url: string; homepage: string | null;
+  stargazers_count: number; language: string | null;
+};
 type FormState = "idle" | "sending" | "success" | "error";
 
 // ─── Constants ────────────────────────────────────────────────
@@ -15,11 +19,11 @@ const LANG_COLORS: Record<string, string> = {
 };
 
 const SOCIAL_LINKS = [
-  { label: "Instagram", href: "https://instagram.com/_freyn.alvr",     icon: <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2"><rect width="20" height="20" x="2" y="2" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/></svg> },
-  { label: "Facebook",  href: "https://facebook.com/adee.freyn",        icon: <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg> },
-  { label: "TikTok",    href: "https://tiktok.com/@freynnn14",          icon: <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.17 8.17 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg> },
-  { label: "LinkedIn",  href: "https://linkedin.com/in/frane-adriane",  icon: <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg> },
-  { label: "GitHub",    href: `https://github.com/$Adenggggg`,  icon: <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg> },
+  { label: "Instagram", href: "https://instagram.com/_freyn.alvr",    icon: <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2"><rect width="20" height="20" x="2" y="2" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/></svg> },
+  { label: "Facebook",  href: "https://facebook.com/adee.freyn",       icon: <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg> },
+  { label: "TikTok",    href: "https://tiktok.com/@freynnn14",         icon: <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.17 8.17 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg> },
+  { label: "LinkedIn",  href: "https://linkedin.com/in/frane-adriane", icon: <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg> },
+  { label: "GitHub",    href: `https://github.com/${GITHUB_USERNAME}`, icon: <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg> },
 ];
 
 const TECH_STACK = [
@@ -72,12 +76,51 @@ function useRepos(username: string) {
   return { repos, loading };
 }
 
-// ─── Sub-components ───────────────────────────────────────────
+// ─── Animated counter ─────────────────────────────────────────
+function AnimatedCount({ target }: { target: number }) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (target === 0) return;
+    let start = 0;
+    const step = Math.ceil(target / 40);
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= target) { setCount(target); clearInterval(timer); }
+      else setCount(start);
+    }, 30);
+    return () => clearInterval(timer);
+  }, [target]);
+  return <>{count}</>;
+}
+
+// ─── Section heading ──────────────────────────────────────────
+function SectionHeading({ children, sub }: { children: React.ReactNode; sub?: string }) {
+  return (
+    <div className="flex flex-col items-center text-center mb-14">
+      {sub && (
+        <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.22em] text-white/25">{sub}</p>
+      )}
+      <h2
+        className="text-4xl md:text-5xl font-bold text-white/90 leading-tight"
+        style={{ fontFamily: "'Playfair Display', 'Didot', 'Georgia', serif", letterSpacing: "-0.02em" }}
+      >
+        {children}
+      </h2>
+      <div className="mt-5 flex items-center gap-3">
+        <div className="h-px w-10 bg-linear-to-r from-transparent to-white/20" />
+        <div className="h-1 w-1 rounded-full bg-white/30" />
+        <div className="h-px w-10 bg-linear-to-l from-transparent to-white/20" />
+      </div>
+    </div>
+  );
+}
+
+// ─── Tech pill ────────────────────────────────────────────────
 function TechPill({ name, icon }: { name: string; icon: React.ReactNode }) {
   return (
-    <div className="flex shrink-0 select-none items-center gap-3 rounded-xl border border-white/8 bg-[#0d1219] px-5 py-3">
-      <span className="shrink-0">{icon}</span>
-      <span className="whitespace-nowrap text-sm font-medium text-white/75">{name}</span>
+    <div className="group flex shrink-0 select-none items-center gap-3 rounded-xl border border-white/[0.07] bg-white/3 px-5 py-3 transition-all duration-300 hover:border-white/20 hover:bg-white/6">
+      <span className="shrink-0 transition-transform duration-300 group-hover:scale-110">{icon}</span>
+      <span className="whitespace-nowrap text-sm font-medium text-white/60 group-hover:text-white/90 transition-colors duration-300">{name}</span>
     </div>
   );
 }
@@ -87,8 +130,10 @@ function TechCarousel() {
   const row2 = [...TECH_STACK.slice(7), ...TECH_STACK.slice(0, 7), ...TECH_STACK.slice(7), ...TECH_STACK.slice(0, 7)];
   return (
     <div className="relative overflow-hidden space-y-3">
-      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-32 bg-linear-to-r from-[#080d12] to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-32 bg-linear-to-l from-[#080d12] to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-40"
+        style={{ background: "linear-gradient(to right, #080d12, transparent)" }} />
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-40"
+        style={{ background: "linear-gradient(to left, #080d12, transparent)" }} />
       <div className="flex gap-3" style={{ animation: "marquee-l 65s linear infinite", width: "max-content" }}>
         {row1.map((t, i) => <TechPill key={`a-${i}`} {...t} />)}
       </div>
@@ -103,6 +148,7 @@ function TechCarousel() {
   );
 }
 
+// ─── Contact form ─────────────────────────────────────────────
 function ContactForm() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [status, setStatus] = useState<FormState>("idle");
@@ -121,32 +167,47 @@ function ContactForm() {
     } catch { setStatus("error"); }
   };
 
-  const field = "w-full rounded-lg border border-white/[0.08] bg-[#111820] px-4 py-3 text-sm text-white placeholder:text-white/20 focus:border-white/25 focus:outline-none transition-colors";
+  const field = "w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3.5 text-sm text-white placeholder:text-white/20 focus:border-white/25 focus:bg-white/[0.05] focus:outline-none transition-all duration-200";
 
   return (
     <div className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="mb-2 block text-sm text-white/40">Name <span className="text-white/20">*</span></label>
+          <label className="mb-2 block text-xs uppercase tracking-widest text-white/30">Name <span className="text-white/15">*</span></label>
           <input type="text" placeholder="Your name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={field} />
         </div>
         <div>
-          <label className="mb-2 block text-sm text-white/40">Email <span className="text-white/20">*</span></label>
+          <label className="mb-2 block text-xs uppercase tracking-widest text-white/30">Email <span className="text-white/15">*</span></label>
           <input type="email" placeholder="you@example.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={field} />
         </div>
       </div>
       <div>
-        <label className="mb-2 block text-sm text-white/40">Message <span className="text-white/20">*</span></label>
+        <label className="mb-2 block text-xs uppercase tracking-widest text-white/30">Message <span className="text-white/15">*</span></label>
         <textarea rows={5} placeholder="Tell me about your project…" value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className={`${field} resize-none`} />
       </div>
       <div className="flex items-center gap-4">
         <button onClick={submit} disabled={status === "sending"}
-          className="rounded-lg bg-white px-6 py-3 text-sm font-semibold text-black transition-all hover:bg-white/90 disabled:opacity-50">
-          {status === "sending" ? "Sending…" : "Send Message"}
+          className="group relative overflow-hidden rounded-xl bg-white px-8 py-3.5 text-sm font-semibold text-black transition-all duration-300 hover:shadow-[0_0_30px_rgba(255,255,255,0.15)] disabled:opacity-50">
+          <span className="relative z-10">{status === "sending" ? "Sending…" : "Send Message"}</span>
+          <div className="absolute inset-0 -translate-x-full bg-white/20 transition-transform duration-300 group-hover:translate-x-0" />
         </button>
-        {status === "success" && <p className="text-sm text-emerald-400">Sent! I'll get back to you soon.</p>}
-        {status === "error"   && <p className="text-sm text-red-400">Something went wrong. Try again.</p>}
+        {status === "success" && (
+          <p className="flex items-center gap-2 text-sm text-emerald-400">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            Sent! I'll get back to you soon.
+          </p>
+        )}
+        {status === "error" && <p className="text-sm text-red-400">Something went wrong. Try again.</p>}
       </div>
+    </div>
+  );
+}
+
+// ─── Decorative line divider ──────────────────────────────────
+function Divider() {
+  return (
+    <div className="flex items-center gap-4 my-0">
+      <div className="h-px flex-1" style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent)" }} />
     </div>
   );
 }
@@ -158,42 +219,98 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#080d12] text-white">
-      {/* Grid bg */}
-      <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ backgroundImage: "linear-gradient(rgba(99,179,237,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(99,179,237,0.04) 1px,transparent 1px)", backgroundSize: "52px 52px", zIndex: 0 }} />
+
+      {/* ── Atmospheric background layers ── */}
+      {/* Fine grid */}
+      <div aria-hidden className="fixed inset-0 pointer-events-none z-0"
+        style={{
+          backgroundImage: "linear-gradient(rgba(99,179,237,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(99,179,237,0.03) 1px,transparent 1px)",
+          backgroundSize: "52px 52px",
+        }}
+      />
+      {/* Top-left hero glow */}
+      <div aria-hidden className="fixed pointer-events-none z-0"
+        style={{
+          top: "-10%", left: "-10%", width: "70vw", height: "70vh",
+          background: "radial-gradient(ellipse, rgba(56,100,200,0.07) 0%, transparent 60%)",
+        }}
+      />
+      {/* Bottom-right accent glow */}
+      <div aria-hidden className="fixed pointer-events-none z-0"
+        style={{
+          bottom: "-5%", right: "-10%", width: "50vw", height: "50vh",
+          background: "radial-gradient(ellipse, rgba(100,60,200,0.05) 0%, transparent 60%)",
+        }}
+      />
+      {/* Grain texture overlay */}
+      <div aria-hidden className="fixed inset-0 pointer-events-none z-0 opacity-[0.025]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+          backgroundRepeat: "repeat",
+          backgroundSize: "128px 128px",
+        }}
+      />
 
       <div className="relative z-10 mx-auto max-w-5xl px-4 md:px-8">
 
-        {/* ── Hero ────────────────────────────────────────── */}
-        <section className="pb-20 pt-40">
-          <div className="flex flex-col gap-10 md:flex-row md:items-center">
-            <div className="shrink-0">
-              <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-[#111820] text-2xl font-bold text-white/30">
-                {/* ✏️ Replace with: <img src="/photo.jpg" alt="Adriane" className="h-full w-full object-cover" /> */}
-                AF
+        {/* ── Hero ──────────────────────────────────────── */}
+        <section className="pb-24 pt-44">
+          <div className="flex flex-col gap-10 md:flex-row md:items-start">
+
+            {/* Avatar with animated ring */}
+            <div className="shrink-0 relative">
+              <div className="relative h-28 w-28">
+                {/* Spinning ring */}
+                <div className="absolute inset-0 rounded-[28px] animate-[spin_8s_linear_infinite]"
+                  style={{ background: "conic-gradient(from 0deg, transparent 60%, rgba(120,140,255,0.5) 80%, transparent 100%)", padding: "1.5px" }}>
+                  <div className="h-full w-full rounded-[26px] bg-[#080d12]" />
+                </div>
+                {/* Avatar */}
+                <div className="absolute inset-0.75 flex items-center justify-center overflow-hidden rounded-[24px] border border-white/10 bg-[#111820] text-2xl font-bold text-white/25">
+                  {/* ✏️ Replace with: <img src="/photo.jpg" alt="Adriane" className="h-full w-full object-cover" /> */}
+                  AF
+                </div>
+                {/* Status dot */}
+                <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#080d12] bg-[#111820]">
+                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                </div>
               </div>
             </div>
-            <div>
-              <div className="mb-3 flex items-center gap-2">
-                <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
-                <span className="text-xs uppercase tracking-widest text-white/40">Available for work</span>
+
+            <div className="flex-1">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/8 bg-white/3 px-4 py-1.5">
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/35">Available for work</span>
               </div>
-              <h1 className="mb-3 text-4xl font-bold tracking-tight md:text-5xl">Adriane Frane</h1>
-              <p className="mb-5 text-lg text-white/50">UI/UX Designer & Full-Stack Developer</p>
-              <p className="mb-7 max-w-md text-sm leading-relaxed text-white/40">
+
+              <h1 className="mb-3 text-5xl font-bold tracking-tight md:text-6xl"
+                style={{ fontFamily: "'Playfair Display', 'Didot', Georgia, serif", letterSpacing: "-0.03em" }}>
+                Adriane Frane
+              </h1>
+
+              <p className="mb-2 text-lg font-light tracking-wide text-white/45">
+                UI/UX Designer <span className="text-white/20 mx-1">·</span> Full-Stack Developer
+              </p>
+
+              <p className="mb-8 max-w-md text-sm leading-relaxed text-white/35">
                 I design and build digital experiences — from interactive web apps to visual identities. Based in Bulacan, Philippines.
               </p>
+
               <div className="flex flex-wrap gap-3">
-                <a href="/projects" className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-white/90">
-                  View Projects
+                <a href="/projects"
+                  className="group relative overflow-hidden rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-black transition-all hover:shadow-[0_0_25px_rgba(255,255,255,0.12)]">
+                  <span className="relative z-10 flex items-center gap-2">
+                    View Projects
+                    <svg className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+                  </span>
                 </a>
                 {[
                   { label: "Contact Me", href: "#contact" },
                   { label: "GitHub",     href: `https://github.com/${GITHUB_USERNAME}`, ext: true },
-                  { label: "LinkedIn",   href: "https://linkedin.com/in/frane-adriane",  ext: true },
+                  { label: "LinkedIn",   href: "https://linkedin.com/in/frane-adriane", ext: true },
                 ].map((b) => (
                   <a key={b.label} href={b.href}
                     target={b.ext ? "_blank" : undefined} rel={b.ext ? "noreferrer" : undefined}
-                    className="rounded-lg border border-white/10 bg-[#111820] px-4 py-2 text-sm text-white/70 transition-colors hover:border-white/25 hover:text-white">
+                    className="rounded-xl border border-white/8 bg-white/3 px-5 py-2.5 text-sm text-white/55 transition-all duration-200 hover:border-white/20 hover:bg-white/7 hover:text-white">
                     {b.label}
                   </a>
                 ))}
@@ -201,91 +318,115 @@ export default function Home() {
             </div>
           </div>
 
+          {/* Stats bar */}
           {stats && (
-            <div className="mt-12 flex flex-wrap gap-10 border-t border-white/5 pt-8">
+            <div className="mt-16 flex flex-wrap gap-0 border border-white/6 rounded-2xl overflow-hidden bg-white/2">
               {[
                 { label: "Public Repos", value: stats.repos },
                 { label: "Followers",    value: stats.followers },
                 { label: "Following",    value: stats.following },
-              ].map((s) => (
-                <div key={s.label}>
-                  <p className="text-3xl font-bold">{s.value}</p>
-                  <p className="mt-1 text-sm text-white/30">{s.label}</p>
+                { label: "Years Active", value: new Date().getFullYear() - 2021 },
+              ].map((s, i) => (
+                <div key={s.label}
+                  className="flex-1 min-w-30 px-8 py-6 border-r border-white/6 last:border-r-0 text-center">
+                  <p className="text-3xl font-bold text-white tabular-nums" style={{ fontFamily: "Georgia, serif" }}>
+                    <AnimatedCount target={s.value} />
+                  </p>
+                  <p className="mt-1 text-xs uppercase tracking-widest text-white/25">{s.label}</p>
                 </div>
               ))}
             </div>
           )}
         </section>
 
-        <hr className="border-white/5" />
+        <Divider />
 
-        {/* ── About ───────────────────────────────────────── */}
-        <section className="relative py-20">
-          <div aria-hidden className="pointer-events-none absolute inset-0 flex items-center justify-center">
-            <div className="h-56 w-96 rounded-full opacity-[0.05]" style={{ background: "radial-gradient(circle,#60a5fa,transparent 70%)" }} />
+        {/* ── About ──────────────────────────────────────── */}
+        <section className="relative py-24">
+          {/* Section glow */}
+          <div aria-hidden className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="h-64 w-125 rounded-full opacity-[0.04]"
+              style={{ background: "radial-gradient(circle, #60a5fa, transparent 70%)" }} />
           </div>
           <div className="relative flex flex-col items-center text-center">
-            <h2 className="mb-8 text-2xl font-bold text-white/90">About me.</h2>
-            <div className="max-w-2xl space-y-4 text-base leading-relaxed text-white/55">
+            <SectionHeading sub="01 — who I am">About me.</SectionHeading>
+            <div className="max-w-2xl space-y-5 text-base leading-[1.9] text-white/45">
               <p>I'm a full-stack developer and UI/UX designer from Bulacan, Philippines. I take pride in building products that are not just functional, but visually intentional and user-centered.</p>
               <p>I enjoy the entire product lifecycle — from wireframes in Figma to deploying scalable applications. I've worked across design tools, front-end frameworks, and back-end systems.</p>
               <p>Currently open to freelance collaborations and interesting projects.</p>
             </div>
+            {/* Trait chips */}
+            <div className="mt-10 flex flex-wrap justify-center gap-2">
+              {["Problem Solver", "Detail-Oriented", "Fast Learner", "Creative", "Open Source Enthusiast"].map((t) => (
+                <span key={t}
+                  className="rounded-full border border-white/8 bg-white/3 px-4 py-1.5 text-xs tracking-wide text-white/35">
+                  {t}
+                </span>
+              ))}
+            </div>
           </div>
         </section>
 
-        <hr className="border-white/5" />
+        <Divider />
 
         {/* ── Tech ────────────────────────────────────────── */}
-        <section className="py-20">
-          <h2 className="mb-8 text-2xl font-bold text-white/90">Technologies I use.</h2>
+        <section className="py-24">
+          <SectionHeading sub="02 — tools of the trade">Technologies I use.</SectionHeading>
           <TechCarousel />
         </section>
 
-        <hr className="border-white/5" />
+        <Divider />
 
         {/* ── Projects ────────────────────────────────────── */}
-        <section className="py-20">
-          <div className="mb-10 flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-white/90">Most Popular Projects.</h2>
-            <a href="/projects" className="text-sm text-white/40 transition-colors hover:text-white/70">See all →</a>
+        <section className="py-24">
+          <SectionHeading sub="03 — my work">Most Popular Projects.</SectionHeading>
+          <div className="mb-6 flex justify-center">
+            <a href="/projects" className="text-sm text-white/30 transition-colors hover:text-white/60 flex items-center gap-1.5">
+              Browse all repositories
+              <svg className="w-3 h-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+            </a>
           </div>
           {loading ? (
             <div className="grid gap-4 md:grid-cols-2">
               {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="h-36 animate-pulse rounded-xl border border-white/5 bg-[#0d1219]" />
+                <div key={i} className="h-40 animate-pulse rounded-2xl border border-white/5 bg-white/2" />
               ))}
             </div>
           ) : repos.length === 0 ? (
-            <p className="text-sm text-white/30">No projects yet. Add some repos on GitHub!</p>
+            <p className="text-center text-sm text-white/25">No projects yet. Add some repos on GitHub!</p>
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
               {repos.map((repo) => (
                 <a key={repo.id} href={repo.html_url} target="_blank" rel="noreferrer"
-                  className="group flex flex-col gap-3 rounded-xl border border-white/5 bg-[#0d1219] p-6 transition-all hover:border-white/15 hover:bg-[#121a24]">
-                  <div className="flex items-start justify-between">
-                    <h3 className="text-base font-semibold text-white/80 transition-colors group-hover:text-white">{repo.name}</h3>
-                    <svg className="mt-0.5 h-4 w-4 shrink-0 text-white/20 transition-colors group-hover:text-white/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  className="group relative flex flex-col gap-3 rounded-2xl border border-white/6 bg-white/2 p-6 transition-all duration-300 hover:border-white/[0.14] hover:bg-white/5 hover:shadow-[0_0_40px_rgba(255,255,255,0.03)]">
+                  {/* Top-right arrow */}
+                  <div className="absolute top-5 right-5 flex h-7 w-7 items-center justify-center rounded-lg border border-white/8 bg-white/4 opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+                    <svg className="h-3.5 w-3.5 text-white/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                       <path d="M7 17L17 7M17 7H7M17 7v10" />
                     </svg>
                   </div>
-                  {repo.description && <p className="line-clamp-2 text-sm leading-relaxed text-white/35">{repo.description}</p>}
-                  <div className="mt-auto flex items-center gap-4">
+                  <h3 className="pr-8 text-base font-semibold text-white/70 transition-colors duration-200 group-hover:text-white">{repo.name}</h3>
+                  {repo.description && (
+                    <p className="line-clamp-2 text-sm leading-relaxed text-white/30">{repo.description}</p>
+                  )}
+                  <div className="mt-auto flex items-center gap-4 pt-2 border-t border-white/5">
                     {repo.language && (
-                      <span className="flex items-center gap-1.5 text-sm text-white/30">
+                      <span className="flex items-center gap-1.5 text-xs text-white/25">
                         <span className="h-2 w-2 rounded-full" style={{ backgroundColor: LANG_COLORS[repo.language] ?? "#888" }} />
                         {repo.language}
                       </span>
                     )}
                     {repo.stargazers_count > 0 && (
-                      <span className="flex items-center gap-1 text-sm text-white/30">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                      <span className="flex items-center gap-1 text-xs text-white/25">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                         {repo.stargazers_count}
                       </span>
                     )}
                     {repo.homepage && (
                       <a href={repo.homepage} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}
-                        className="ml-auto text-sm text-white/30 transition-colors hover:text-white/70">Live →</a>
+                        className="ml-auto text-xs text-white/25 transition-colors hover:text-white/60">
+                        Live →
+                      </a>
                     )}
                   </div>
                 </a>
@@ -294,25 +435,30 @@ export default function Home() {
           )}
         </section>
 
-        <hr className="border-white/5" />
+        <Divider />
 
         {/* ── Contact ─────────────────────────────────────── */}
-        <section id="contact" className="py-20">
-          <h2 className="mb-8 text-2xl font-bold text-white/90">Contact me.</h2>
-          <div className="grid gap-12 md:grid-cols-[1fr_200px]">
+        <section id="contact" className="py-24 pb-32">
+          <SectionHeading sub="04 — let's work together">Contact me.</SectionHeading>
+          <div className="grid gap-14 md:grid-cols-[1fr_220px]">
             <div>
-              <p className="mb-8 text-base text-white/40">Want to order a project, or just want to stay in touch? Fill out the form below.</p>
+              <p className="mb-8 text-sm leading-relaxed text-white/35">
+                Want to order a project, or just want to stay in touch? Fill out the form below and I'll get back to you as soon as possible.
+              </p>
               <ContactForm />
             </div>
-            <div className="flex flex-col gap-2">
-              <p className="mb-2 text-sm text-white/30">Or contact me with…</p>
-              {SOCIAL_LINKS.map((s) => (
-                <a key={s.label} href={s.href} target="_blank" rel="noreferrer"
-                  className="flex items-center gap-3 rounded-xl border border-white/8 bg-[#111820] px-4 py-3 text-sm text-white/55 transition-all hover:border-white/20 hover:text-white">
-                  <span className="shrink-0">{s.icon}</span>
-                  {s.label}
-                </a>
-              ))}
+            <div>
+              <p className="mb-4 text-xs uppercase tracking-widest text-white/20">Find me on</p>
+              <div className="flex flex-col gap-2">
+                {SOCIAL_LINKS.map((s) => (
+                  <a key={s.label} href={s.href} target="_blank" rel="noreferrer"
+                    className="group flex items-center gap-3 rounded-xl border border-white/[0.07] bg-white/2 px-4 py-3 text-sm text-white/40 transition-all duration-200 hover:border-white/15 hover:bg-white/5 hover:text-white">
+                    <span className="shrink-0 transition-transform duration-200 group-hover:scale-110">{s.icon}</span>
+                    {s.label}
+                    <svg className="ml-auto h-3 w-3 opacity-0 transition-all duration-200 group-hover:opacity-40 group-hover:translate-x-0.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </section>
