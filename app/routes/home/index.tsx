@@ -118,7 +118,7 @@ function SectionHeading({ children, sub }: { children: React.ReactNode; sub?: st
 // ─── Tech pill ────────────────────────────────────────────────
 function TechPill({ name, icon }: { name: string; icon: React.ReactNode }) {
   return (
-    <div className="group flex shrink-0 select-none items-center gap-3 rounded-xl border border-white/[0.07] bg-white/3 px-5 py-3 transition-all duration-300 hover:border-white/20 hover:bg-white/6">
+    <div className="group flex shrink-0 select-none items-center gap-3 rounded-xl border border-white/[0.07] bg-[#0c1119] px-5 py-3 transition-all duration-300 hover:border-white/20 hover:bg-[#0f1520]">
       <span className="shrink-0 transition-transform duration-300 group-hover:scale-110">{icon}</span>
       <span className="whitespace-nowrap text-sm font-medium text-white/60 group-hover:text-white/90 transition-colors duration-300">{name}</span>
     </div>
@@ -167,7 +167,7 @@ function ContactForm() {
     } catch { setStatus("error"); }
   };
 
-  const field = "w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3.5 text-sm text-white placeholder:text-white/20 focus:border-white/25 focus:bg-white/[0.05] focus:outline-none transition-all duration-200";
+  const field = "w-full rounded-xl border border-white/[0.08] bg-[#0f1520] px-4 py-3.5 text-sm text-white placeholder:text-white/20 focus:border-white/25 focus:bg-[#141d2b] focus:outline-none transition-all duration-200";
 
   return (
     <div className="space-y-4">
@@ -278,7 +278,7 @@ export default function Home() {
             </div>
 
             <div className="flex-1">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/8 bg-white/3 px-4 py-1.5">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/8 bg-[#0f1520] px-4 py-1.5">
                 <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/35">Available for work</span>
               </div>
 
@@ -310,7 +310,7 @@ export default function Home() {
                 ].map((b) => (
                   <a key={b.label} href={b.href}
                     target={b.ext ? "_blank" : undefined} rel={b.ext ? "noreferrer" : undefined}
-                    className="rounded-xl border border-white/8 bg-white/3 px-5 py-2.5 text-sm text-white/55 transition-all duration-200 hover:border-white/20 hover:bg-white/7 hover:text-white">
+                    className="rounded-xl border border-white/8 bg-[#0f1520] px-5 py-2.5 text-sm text-white/55 transition-all duration-200 hover:border-white/20 hover:bg-[#141d2b] hover:text-white">
                     {b.label}
                   </a>
                 ))}
@@ -320,7 +320,7 @@ export default function Home() {
 
           {/* Stats bar */}
           {stats && (
-            <div className="mt-16 flex flex-wrap gap-0 border border-white/6 rounded-2xl overflow-hidden bg-white/2">
+            <div className="mt-16 flex flex-wrap gap-0 border border-white/6 rounded-2xl overflow-hidden bg-[#0c1119]">
               {[
                 { label: "Public Repos", value: stats.repos },
                 { label: "Followers",    value: stats.followers },
@@ -359,7 +359,7 @@ export default function Home() {
             <div className="mt-10 flex flex-wrap justify-center gap-2">
               {["Problem Solver", "Detail-Oriented", "Fast Learner", "Creative", "Open Source Enthusiast"].map((t) => (
                 <span key={t}
-                  className="rounded-full border border-white/8 bg-white/3 px-4 py-1.5 text-xs tracking-wide text-white/35">
+                  className="rounded-full border border-white/8 bg-[#0f1520] px-4 py-1.5 text-xs tracking-wide text-white/35">
                   {t}
                 </span>
               ))}
@@ -398,9 +398,9 @@ export default function Home() {
             <div className="grid gap-4 md:grid-cols-2">
               {repos.map((repo) => (
                 <a key={repo.id} href={repo.html_url} target="_blank" rel="noreferrer"
-                  className="group relative flex flex-col gap-3 rounded-2xl border border-white/6 bg-white/2 p-6 transition-all duration-300 hover:border-white/[0.14] hover:bg-white/5 hover:shadow-[0_0_40px_rgba(255,255,255,0.03)]">
+                  className="group relative flex flex-col gap-3 rounded-2xl border border-white/6 bg-[#0c1119] p-6 transition-all duration-300 hover:border-white/14] hover:bg-[#0f1520] hover:shadow-[0_0_40px_rgba(255,255,255,0.03)]">
                   {/* Top-right arrow */}
-                  <div className="absolute top-5 right-5 flex h-7 w-7 items-center justify-center rounded-lg border border-white/8 bg-white/4 opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+                  <div className="absolute top-5 right-5 flex h-7 w-7 items-center justify-center rounded-lg border border-white/8 bg-[#141d2b] opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
                     <svg className="h-3.5 w-3.5 text-white/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                       <path d="M7 17L17 7M17 7H7M17 7v10" />
                     </svg>
@@ -452,7 +452,7 @@ export default function Home() {
               <div className="flex flex-col gap-2">
                 {SOCIAL_LINKS.map((s) => (
                   <a key={s.label} href={s.href} target="_blank" rel="noreferrer"
-                    className="group flex items-center gap-3 rounded-xl border border-white/[0.07] bg-white/2 px-4 py-3 text-sm text-white/40 transition-all duration-200 hover:border-white/15 hover:bg-white/5 hover:text-white">
+                    className="group flex items-center gap-3 rounded-xl border border-white/[0.07] bg-[#0f1520] px-4 py-3 text-sm text-white/40 transition-all duration-200 hover:border-white/15 hover:bg-[#141d2b] hover:text-white">
                     <span className="shrink-0 transition-transform duration-200 group-hover:scale-110">{s.icon}</span>
                     {s.label}
                     <svg className="ml-auto h-3 w-3 opacity-0 transition-all duration-200 group-hover:opacity-40 group-hover:translate-x-0.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
