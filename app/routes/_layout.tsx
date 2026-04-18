@@ -1,13 +1,14 @@
 import { Outlet } from "react-router";
 import Navbar from "~/components/ui/navbar";
 import Footer from "~/components/ui/footer";
+import { ThemeProvider } from "~/lib/theme";
 
 export default function Layout() {
   return (
-    <div>
+    <ThemeProvider>
       <Navbar />
       <Outlet />
       <Footer />
-    </div>
+    </ThemeProvider>
   );
 }

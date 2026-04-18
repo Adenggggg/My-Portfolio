@@ -3,8 +3,6 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
 
-@custom-variant dark (&:is(.dark *));
-
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -129,6 +127,43 @@ body {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+/* ── Portfolio theme variables ── */
+[data-theme="dark"] {
+  --bg-base:    #080d12;
+  --bg-card:    #0c1119;
+  --bg-card2:   #0f1520;
+  --bg-card3:   #141d2b;
+  --border-col:     rgba(255, 255, 255, 0.07);
+  --border-hov: rgba(255, 255, 255, 0.20);
+  --text-1:     rgba(255, 255, 255, 0.85);
+  --text-2:     rgba(255, 255, 255, 0.45);
+  --text-3:     rgba(255, 255, 255, 0.25);
+  --text-4:     rgba(255, 255, 255, 0.12);
+  --grid:       rgba(99, 179, 237, 0.035);
+  --glow-a:     rgba(56, 100, 200, 0.07);
+  --glow-b:     rgba(100, 60, 200, 0.05);
+  --btn-bg:     #ffffff;
+  --btn-text:   #000000;
+}
+
+[data-theme="light"] {
+  --bg-base:    #f4f3ee;
+  --bg-card:    #eceae3;
+  --bg-card2:   #e5e3db;
+  --bg-card3:   #dddbd2;
+  --border-col:     rgba(0, 0, 0, 0.08);
+  --border-hov: rgba(0, 0, 0, 0.18);
+  --text-1:     rgba(0, 0, 0, 0.82);
+  --text-2:     rgba(0, 0, 0, 0.50);
+  --text-3:     rgba(0, 0, 0, 0.35);
+  --text-4:     rgba(0, 0, 0, 0.20);
+  --grid:       rgba(0, 0, 0, 0.04);
+  --glow-a:     rgba(56, 100, 200, 0.04);
+  --glow-b:     rgba(100, 60, 200, 0.03);
+  --btn-bg:     #111111;
+  --btn-text:   #ffffff;
 }
 
 @layer base {

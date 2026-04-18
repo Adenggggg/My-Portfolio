@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { useTheme } from "~/lib/theme";
 
-// ─── Config ───────────────────────────────────────────────────
 const GITHUB_USERNAME = "Adenggggg";
 
-// ─── Types ────────────────────────────────────────────────────
 type GitHubStats = { repos: number; followers: number; following: number };
 type Repo = {
   id: number; name: string; description: string | null;
@@ -12,7 +11,6 @@ type Repo = {
 };
 type FormState = "idle" | "sending" | "success" | "error";
 
-// ─── Constants ────────────────────────────────────────────────
 const LANG_COLORS: Record<string, string> = {
   TypeScript: "#3178C6", JavaScript: "#F7DF1E", PHP: "#8892BF",
   Python: "#3776AB", CSS: "#563D7C", HTML: "#E34F26", "C#": "#239120",
@@ -39,7 +37,7 @@ const TECH_STACK = [
   { name: "Git",          icon: <svg viewBox="0 0 24 24" width="26" height="26" fill="#F05032"><path d="M23.15 10.85L13.15.85a2 2 0 00-2.83 0l-2 2 2.54 2.54a2.38 2.38 0 013 3.03l2.44 2.44a2.38 2.38 0 11-1.42 1.42l-2.28-2.28v5.98a2.38 2.38 0 11-1.95-.07V9.72a2.38 2.38 0 01-1.29-3.12L7 4.03.85 10.15a2 2 0 000 2.83l10 10a2 2 0 002.83 0l9.47-9.47a2 2 0 000-2.66z"/></svg> },
   { name: "npm",          icon: <svg viewBox="0 0 24 24" width="26" height="26"><rect width="24" height="24" rx="3" fill="#CB3837"/><path d="M4 7h16v10H12v-8H8v8H4V7z" fill="white"/></svg> },
   { name: "pnpm",         icon: <svg viewBox="0 0 24 24" width="26" height="26"><rect width="24" height="24" rx="3" fill="#F69220"/><rect x="3" y="3" width="5" height="5" rx="1" fill="white"/><rect x="9.5" y="3" width="5" height="5" rx="1" fill="white"/><rect x="16" y="3" width="5" height="5" rx="1" fill="white"/><rect x="3" y="9.5" width="5" height="5" rx="1" fill="white"/><rect x="9.5" y="9.5" width="5" height="5" rx="1" fill="white"/><rect x="3" y="16" width="5" height="5" rx="1" fill="white"/><rect x="9.5" y="16" width="5" height="5" rx="1" fill="white"/></svg> },
-  { name: "Vercel",       icon: <svg viewBox="0 0 24 24" width="26" height="26" fill="white"><path d="M12 2L2 19.5h20L12 2z"/></svg> },
+  { name: "Vercel",       icon: <svg viewBox="0 0 24 24" width="26" height="26"><path d="M12 2L2 19.5h20L12 2z" fill="currentColor"/></svg> },
   { name: "ESLint",       icon: <svg viewBox="0 0 24 24" width="26" height="26"><path d="M7.76 2.9L2.3 12l5.46 9.1h10.48L23.7 12 18.24 2.9H7.76z" fill="#4B32C3"/><path d="M16.39 15.5H7.61L6.22 13l4.95-2.86L16.12 13l-1.39 2.5h1.66z" fill="none" stroke="white" strokeWidth="1.2"/></svg> },
   { name: "Figma",        icon: <svg viewBox="0 0 24 24" width="26" height="26"><path d="M8 24c2.208 0 4-1.792 4-4v-4H8c-2.208 0-4 1.792-4 4s1.792 4 4 4z" fill="#0ACF83"/><path d="M4 12c0-2.208 1.792-4 4-4h4v8H8c-2.208 0-4-1.792-4-4z" fill="#A259FF"/><path d="M4 4c0-2.208 1.792-4 4-4h4v8H8C5.792 8 4 6.208 4 4z" fill="#F24E1E"/><path d="M12 0h4c2.208 0 4 1.792 4 4s-1.792 4-4 4h-4V0z" fill="#FF7262"/><path d="M20 12c0 2.208-1.792 4-4 4s-4-1.792-4-4 1.792-4 4-4 4 1.792 4 4z" fill="#1ABCFE"/></svg> },
   { name: "Photoshop",    icon: <svg viewBox="0 0 24 24" width="26" height="26"><rect width="24" height="24" rx="4" fill="#001E36"/><path d="M6 17V7h3.1c2.4 0 3.9 1.3 3.9 3.3 0 2.2-1.7 3.4-4.1 3.4H7.7V17H6zm1.7-4.8h1.2c1.5 0 2.4-.7 2.4-2 0-1.2-.8-1.9-2.3-1.9H7.7v3.9zM14.5 14.5c.1.8.8 1.2 1.7 1.2.8 0 1.3-.4 1.3-1 0-.5-.3-.8-1.2-1l-.9-.3c-1.3-.4-2-.9-2-2.1 0-1.3 1-2.1 2.6-2.1 1.7 0 2.6.9 2.7 2.1h-1.5c-.1-.6-.6-1-1.2-1-.7 0-1.1.4-1.1.9 0 .5.3.7 1.2 1l.9.3c1.4.4 2 1 2 2.2 0 1.4-1.1 2.2-2.8 2.2-1.8 0-2.8-.9-2.9-2.4h1.2z" fill="#31A8FF"/></svg> },
@@ -98,18 +96,20 @@ function SectionHeading({ children, sub }: { children: React.ReactNode; sub?: st
   return (
     <div className="flex flex-col items-center text-center mb-14">
       {sub && (
-        <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.22em] text-white/25">{sub}</p>
+        <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.22em]" style={{ color: "var(--text-3)" }}>
+          {sub}
+        </p>
       )}
       <h2
-        className="text-4xl md:text-5xl font-bold text-white/90 leading-tight"
-        style={{ fontFamily: "'Playfair Display', 'Didot', 'Georgia', serif", letterSpacing: "-0.02em" }}
+        className="text-4xl md:text-5xl font-bold leading-tight"
+        style={{ fontFamily: "'Playfair Display', 'Didot', 'Georgia', serif", letterSpacing: "-0.02em", color: "var(--text-1)" }}
       >
         {children}
       </h2>
       <div className="mt-5 flex items-center gap-3">
-        <div className="h-px w-10 bg-linear-to-r from-transparent to-white/20" />
-        <div className="h-1 w-1 rounded-full bg-white/30" />
-        <div className="h-px w-10 bg-linear-to-l from-transparent to-white/20" />
+        <div className="h-px w-10" style={{ background: "linear-gradient(to right, transparent, var(--border-col))" }} />
+        <div className="h-1 w-1 rounded-full" style={{ background: "var(--border-hov)" }} />
+        <div className="h-px w-10" style={{ background: "linear-gradient(to left, transparent, var(--border-col))" }} />
       </div>
     </div>
   );
@@ -118,22 +118,32 @@ function SectionHeading({ children, sub }: { children: React.ReactNode; sub?: st
 // ─── Tech pill ────────────────────────────────────────────────
 function TechPill({ name, icon }: { name: string; icon: React.ReactNode }) {
   return (
-    <div className="group flex shrink-0 select-none items-center gap-3 rounded-xl border border-white/[0.07] bg-[#0c1119] px-5 py-3 transition-all duration-300 hover:border-white/20 hover:bg-[#0f1520]">
+    <div
+      className="group flex shrink-0 select-none items-center gap-3 rounded-xl px-5 py-3 transition-all duration-300"
+      style={{ border: "1px solid var(--border-col)", background: "var(--bg-card)" }}
+    >
       <span className="shrink-0 transition-transform duration-300 group-hover:scale-110">{icon}</span>
-      <span className="whitespace-nowrap text-sm font-medium text-white/60 group-hover:text-white/90 transition-colors duration-300">{name}</span>
+      <span className="whitespace-nowrap text-sm font-medium transition-colors duration-300" style={{ color: "var(--text-2)" }}>
+        {name}
+      </span>
     </div>
   );
 }
 
+// ─── Tech carousel ────────────────────────────────────────────
 function TechCarousel() {
   const row1 = [...TECH_STACK, ...TECH_STACK];
   const row2 = [...TECH_STACK.slice(7), ...TECH_STACK.slice(0, 7), ...TECH_STACK.slice(7), ...TECH_STACK.slice(0, 7)];
   return (
     <div className="relative overflow-hidden space-y-3">
-      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-40"
-        style={{ background: "linear-gradient(to right, #080d12, transparent)" }} />
-      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-40"
-        style={{ background: "linear-gradient(to left, #080d12, transparent)" }} />
+      <div
+        className="pointer-events-none absolute inset-y-0 left-0 z-10 w-40"
+        style={{ background: "linear-gradient(to right, var(--bg-base), transparent)" }}
+      />
+      <div
+        className="pointer-events-none absolute inset-y-0 right-0 z-10 w-40"
+        style={{ background: "linear-gradient(to left, var(--bg-base), transparent)" }}
+      />
       <div className="flex gap-3" style={{ animation: "marquee-l 65s linear infinite", width: "max-content" }}>
         {row1.map((t, i) => <TechPill key={`a-${i}`} {...t} />)}
       </div>
@@ -167,150 +177,208 @@ function ContactForm() {
     } catch { setStatus("error"); }
   };
 
-  const field = "w-full rounded-xl border border-white/[0.08] bg-[#0f1520] px-4 py-3.5 text-sm text-white placeholder:text-white/20 focus:border-white/25 focus:bg-[#141d2b] focus:outline-none transition-all duration-200";
+  const inputStyle = {
+    border: "1px solid var(--border-col)",
+    background: "var(--bg-card2)",
+    color: "var(--text-1)",
+  };
 
   return (
     <div className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="mb-2 block text-xs uppercase tracking-widest text-white/30">Name <span className="text-white/15">*</span></label>
-          <input type="text" placeholder="Your name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={field} />
+          <label className="mb-2 block text-xs uppercase tracking-widest" style={{ color: "var(--text-3)" }}>
+            Name <span style={{ color: "var(--text-4)" }}>*</span>
+          </label>
+          <input
+            type="text"
+            placeholder="Your name"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            className="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200"
+            style={inputStyle}
+          />
         </div>
         <div>
-          <label className="mb-2 block text-xs uppercase tracking-widest text-white/30">Email <span className="text-white/15">*</span></label>
-          <input type="email" placeholder="you@example.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={field} />
+          <label className="mb-2 block text-xs uppercase tracking-widest" style={{ color: "var(--text-3)" }}>
+            Email <span style={{ color: "var(--text-4)" }}>*</span>
+          </label>
+          <input
+            type="email"
+            placeholder="you@example.com"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            className="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200"
+            style={inputStyle}
+          />
         </div>
       </div>
       <div>
-        <label className="mb-2 block text-xs uppercase tracking-widest text-white/30">Message <span className="text-white/15">*</span></label>
-        <textarea rows={5} placeholder="Tell me about your project…" value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className={`${field} resize-none`} />
+        <label className="mb-2 block text-xs uppercase tracking-widest" style={{ color: "var(--text-3)" }}>
+          Message <span style={{ color: "var(--text-4)" }}>*</span>
+        </label>
+        <textarea
+          rows={5}
+          placeholder="Tell me about your project…"
+          value={form.message}
+          onChange={(e) => setForm({ ...form, message: e.target.value })}
+          className="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200 resize-none"
+          style={inputStyle}
+        />
       </div>
       <div className="flex items-center gap-4">
-        <button onClick={submit} disabled={status === "sending"}
-          className="group relative overflow-hidden rounded-xl bg-white px-8 py-3.5 text-sm font-semibold text-black transition-all duration-300 hover:shadow-[0_0_30px_rgba(255,255,255,0.15)] disabled:opacity-50">
-          <span className="relative z-10">{status === "sending" ? "Sending…" : "Send Message"}</span>
-          <div className="absolute inset-0 -translate-x-full bg-white/20 transition-transform duration-300 group-hover:translate-x-0" />
+        <button
+          onClick={submit}
+          disabled={status === "sending"}
+          className="rounded-xl px-8 py-3.5 text-sm font-semibold transition-all duration-300 disabled:opacity-50"
+          style={{ background: "var(--btn-bg)", color: "var(--btn-text)" }}
+        >
+          {status === "sending" ? "Sending…" : "Send Message"}
         </button>
         {status === "success" && (
-          <p className="flex items-center gap-2 text-sm text-emerald-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <p className="flex items-center gap-2 text-sm text-emerald-500">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
             Sent! I'll get back to you soon.
           </p>
         )}
-        {status === "error" && <p className="text-sm text-red-400">Something went wrong. Try again.</p>}
+        {status === "error" && (
+          <p className="text-sm text-red-500">Something went wrong. Try again.</p>
+        )}
       </div>
     </div>
   );
 }
 
-// ─── Decorative line divider ──────────────────────────────────
+// ─── Divider ──────────────────────────────────────────────────
 function Divider() {
   return (
-    <div className="flex items-center gap-4 my-0">
-      <div className="h-px flex-1" style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent)" }} />
+    <div className="flex items-center my-0">
+      <div
+        className="h-px flex-1"
+        style={{ background: "linear-gradient(to right, transparent, var(--border-col), transparent)" }}
+      />
     </div>
   );
 }
 
 // ─── Page ─────────────────────────────────────────────────────
 export default function Home() {
+  const { theme } = useTheme();
   const stats = useGitHubStats(GITHUB_USERNAME);
   const { repos, loading } = useRepos(GITHUB_USERNAME);
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#080d12] text-white">
-
-      {/* ── Atmospheric background layers ── */}
-      {/* Fine grid */}
-      <div aria-hidden className="fixed inset-0 pointer-events-none z-0"
+    <div
+      className="relative min-h-screen overflow-hidden transition-colors duration-300"
+      style={{ background: "var(--bg-base)", color: "var(--text-1)" }}
+    >
+      {/* Grid */}
+      <div
+        aria-hidden
+        className="fixed inset-0 pointer-events-none z-0"
         style={{
-          backgroundImage: "linear-gradient(rgba(99,179,237,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(99,179,237,0.03) 1px,transparent 1px)",
+          backgroundImage: "linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px)",
           backgroundSize: "52px 52px",
         }}
       />
-      {/* Top-left hero glow */}
-      <div aria-hidden className="fixed pointer-events-none z-0"
-        style={{
-          top: "-10%", left: "-10%", width: "70vw", height: "70vh",
-          background: "radial-gradient(ellipse, rgba(56,100,200,0.07) 0%, transparent 60%)",
-        }}
+      {/* Glow A */}
+      <div
+        aria-hidden
+        className="fixed pointer-events-none z-0"
+        style={{ top: "-10%", left: "-10%", width: "70vw", height: "70vh", background: "radial-gradient(ellipse, var(--glow-a) 0%, transparent 60%)" }}
       />
-      {/* Bottom-right accent glow */}
-      <div aria-hidden className="fixed pointer-events-none z-0"
-        style={{
-          bottom: "-5%", right: "-10%", width: "50vw", height: "50vh",
-          background: "radial-gradient(ellipse, rgba(100,60,200,0.05) 0%, transparent 60%)",
-        }}
-      />
-      {/* Grain texture overlay */}
-      <div aria-hidden className="fixed inset-0 pointer-events-none z-0 opacity-[0.025]"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-          backgroundRepeat: "repeat",
-          backgroundSize: "128px 128px",
-        }}
+      {/* Glow B */}
+      <div
+        aria-hidden
+        className="fixed pointer-events-none z-0"
+        style={{ bottom: "-5%", right: "-10%", width: "50vw", height: "50vh", background: "radial-gradient(ellipse, var(--glow-b) 0%, transparent 60%)" }}
       />
 
       <div className="relative z-10 mx-auto max-w-5xl px-4 md:px-8">
 
-        {/* ── Hero ──────────────────────────────────────── */}
+        {/* ── Hero ── */}
         <section className="pb-24 pt-44">
           <div className="flex flex-col gap-10 md:flex-row md:items-start">
 
-            {/* Avatar with animated ring */}
+            {/* Avatar */}
             <div className="shrink-0 relative">
               <div className="relative h-28 w-28">
-                {/* Spinning ring */}
-                <div className="absolute inset-0 rounded-[28px] animate-[spin_8s_linear_infinite]"
-                  style={{ background: "conic-gradient(from 0deg, transparent 60%, rgba(120,140,255,0.5) 80%, transparent 100%)", padding: "1.5px" }}>
-                  <div className="h-full w-full rounded-[26px] bg-[#080d12]" />
+                <div
+                  className="absolute inset-0 rounded-[28px] animate-[spin_8s_linear_infinite]"
+                  style={{ background: "conic-gradient(from 0deg, transparent 60%, rgba(120,140,255,0.5) 80%, transparent 100%)", padding: "1.5px" }}
+                >
+                  <div className="h-full w-full rounded-[26px]" style={{ background: "var(--bg-base)" }} />
                 </div>
-                {/* Avatar */}
-                <div className="absolute inset-0.75 flex items-center justify-center overflow-hidden rounded-[24px] border border-white/10 bg-[#111820] text-2xl font-bold text-white/25">
-                  {/* ✏️ Replace with: <img src="/photo.jpg" alt="Adriane" className="h-full w-full object-cover" /> */}
+                <div
+                  className="absolute inset-0.75 flex items-center justify-center overflow-hidden rounded-[24px] text-2xl font-bold"
+                  style={{ border: "1px solid var(--border-col)", background: "var(--bg-card2)", color: "var(--text-3)" }}
+                >
                   AF
                 </div>
-                {/* Status dot */}
-                <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#080d12] bg-[#111820]">
+                <div
+                  className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full border-2"
+                  style={{ borderColor: "var(--bg-base)", background: "var(--bg-card2)" }}
+                >
                   <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
                 </div>
               </div>
             </div>
 
             <div className="flex-1">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/8 bg-[#0f1520] px-4 py-1.5">
-                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/35">Available for work</span>
+              {/* Available badge */}
+              <div
+                className="mb-4 inline-flex items-center gap-2 rounded-full px-4 py-1.5"
+                style={{ border: "1px solid var(--border-col)", background: "var(--bg-card2)" }}
+              >
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em]" style={{ color: "var(--text-3)" }}>
+                  Available for work
+                </span>
               </div>
 
-              <h1 className="mb-3 text-5xl font-bold tracking-tight md:text-6xl"
-                style={{ fontFamily: "'Playfair Display', 'Didot', Georgia, serif", letterSpacing: "-0.03em" }}>
+              <h1
+                className="mb-3 text-5xl font-bold tracking-tight md:text-6xl"
+                style={{ fontFamily: "'Playfair Display', 'Didot', Georgia, serif", letterSpacing: "-0.03em", color: "var(--text-1)" }}
+              >
                 Adriane Frane
               </h1>
 
-              <p className="mb-2 text-lg font-light tracking-wide text-white/45">
-                UI/UX Designer <span className="text-white/20 mx-1">·</span> Full-Stack Developer
+              <p className="mb-2 text-lg font-light tracking-wide" style={{ color: "var(--text-2)" }}>
+                UI/UX Designer
+                <span className="mx-1" style={{ color: "var(--text-4)" }}>·</span>
+                Full-Stack Developer
               </p>
 
-              <p className="mb-8 max-w-md text-sm leading-relaxed text-white/35">
+              <p className="mb-8 max-w-md text-sm leading-relaxed" style={{ color: "var(--text-3)" }}>
                 I design and build digital experiences — from interactive web apps to visual identities. Based in Bulacan, Philippines.
               </p>
 
               <div className="flex flex-wrap gap-3">
-                <a href="/projects"
-                  className="group relative overflow-hidden rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-black transition-all hover:shadow-[0_0_25px_rgba(255,255,255,0.12)]">
+                <a
+                  href="/projects"
+                  className="group relative overflow-hidden rounded-xl px-5 py-2.5 text-sm font-semibold transition-all"
+                  style={{ background: "var(--btn-bg)", color: "var(--btn-text)" }}
+                >
                   <span className="relative z-10 flex items-center gap-2">
                     View Projects
-                    <svg className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+                    <svg className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M3 8h10M9 4l4 4-4 4"/>
+                    </svg>
                   </span>
                 </a>
+
                 {[
-                  { label: "Contact Me", href: "#contact" },
+                  { label: "Contact Me", href: "#contact", ext: false },
                   { label: "GitHub",     href: `https://github.com/${GITHUB_USERNAME}`, ext: true },
                   { label: "LinkedIn",   href: "https://linkedin.com/in/frane-adriane", ext: true },
                 ].map((b) => (
-                  <a key={b.label} href={b.href}
-                    target={b.ext ? "_blank" : undefined} rel={b.ext ? "noreferrer" : undefined}
-                    className="rounded-xl border border-white/8 bg-[#0f1520] px-5 py-2.5 text-sm text-white/55 transition-all duration-200 hover:border-white/20 hover:bg-[#141d2b] hover:text-white">
+                  <a
+                    key={b.label}
+                    href={b.href}
+                    target={b.ext ? "_blank" : undefined}
+                    rel={b.ext ? "noreferrer" : undefined}
+                    className="rounded-xl px-5 py-2.5 text-sm transition-all duration-200"
+                    style={{ border: "1px solid var(--border-col)", background: "var(--bg-card2)", color: "var(--text-2)" }}
+                  >
                     {b.label}
                   </a>
                 ))}
@@ -320,19 +388,27 @@ export default function Home() {
 
           {/* Stats bar */}
           {stats && (
-            <div className="mt-16 flex flex-wrap gap-0 border border-white/6 rounded-2xl overflow-hidden bg-[#0c1119]">
+            <div
+              className="mt-16 flex flex-wrap rounded-2xl overflow-hidden"
+              style={{ border: "1px solid var(--border-col)", background: "var(--bg-card)" }}
+            >
               {[
                 { label: "Public Repos", value: stats.repos },
                 { label: "Followers",    value: stats.followers },
                 { label: "Following",    value: stats.following },
                 { label: "Years Active", value: new Date().getFullYear() - 2021 },
-              ].map((s, i) => (
-                <div key={s.label}
-                  className="flex-1 min-w-30 px-8 py-6 border-r border-white/6 last:border-r-0 text-center">
-                  <p className="text-3xl font-bold text-white tabular-nums" style={{ fontFamily: "Georgia, serif" }}>
+              ].map((s, i, arr) => (
+                <div
+                  key={s.label}
+                  className="flex-1 min-w-30 px-8 py-6 text-center"
+                  style={{ borderRight: i < arr.length - 1 ? "1px solid var(--border-col)" : "none" }}
+                >
+                  <p className="text-3xl font-bold tabular-nums" style={{ fontFamily: "Georgia, serif", color: "var(--text-1)" }}>
                     <AnimatedCount target={s.value} />
                   </p>
-                  <p className="mt-1 text-xs uppercase tracking-widest text-white/25">{s.label}</p>
+                  <p className="mt-1 text-xs uppercase tracking-widest" style={{ color: "var(--text-3)" }}>
+                    {s.label}
+                  </p>
                 </div>
               ))}
             </div>
@@ -341,25 +417,22 @@ export default function Home() {
 
         <Divider />
 
-        {/* ── About ──────────────────────────────────────── */}
+        {/* ── About ── */}
         <section className="relative py-24">
-          {/* Section glow */}
-          <div aria-hidden className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="h-64 w-125 rounded-full opacity-[0.04]"
-              style={{ background: "radial-gradient(circle, #60a5fa, transparent 70%)" }} />
-          </div>
           <div className="relative flex flex-col items-center text-center">
             <SectionHeading sub="01 — who I am">About me.</SectionHeading>
-            <div className="max-w-2xl space-y-5 text-base leading-[1.9] text-white/45">
+            <div className="max-w-2xl space-y-5 text-base leading-[1.9]" style={{ color: "var(--text-2)" }}>
               <p>I'm a full-stack developer and UI/UX designer from Bulacan, Philippines. I take pride in building products that are not just functional, but visually intentional and user-centered.</p>
               <p>I enjoy the entire product lifecycle — from wireframes in Figma to deploying scalable applications. I've worked across design tools, front-end frameworks, and back-end systems.</p>
               <p>Currently open to freelance collaborations and interesting projects.</p>
             </div>
-            {/* Trait chips */}
             <div className="mt-10 flex flex-wrap justify-center gap-2">
               {["Problem Solver", "Detail-Oriented", "Fast Learner", "Creative", "Open Source Enthusiast"].map((t) => (
-                <span key={t}
-                  className="rounded-full border border-white/8 bg-[#0f1520] px-4 py-1.5 text-xs tracking-wide text-white/35">
+                <span
+                  key={t}
+                  className="rounded-full px-4 py-1.5 text-xs tracking-wide"
+                  style={{ border: "1px solid var(--border-col)", background: "var(--bg-card2)", color: "var(--text-3)" }}
+                >
                   {t}
                 </span>
               ))}
@@ -369,7 +442,7 @@ export default function Home() {
 
         <Divider />
 
-        {/* ── Tech ────────────────────────────────────────── */}
+        {/* ── Tech ── */}
         <section className="py-24">
           <SectionHeading sub="02 — tools of the trade">Technologies I use.</SectionHeading>
           <TechCarousel />
@@ -377,54 +450,90 @@ export default function Home() {
 
         <Divider />
 
-        {/* ── Projects ────────────────────────────────────── */}
+        {/* ── Projects ── */}
         <section className="py-24">
           <SectionHeading sub="03 — my work">Most Popular Projects.</SectionHeading>
           <div className="mb-6 flex justify-center">
-            <a href="/projects" className="text-sm text-white/30 transition-colors hover:text-white/60 flex items-center gap-1.5">
+            <a
+              href="/projects"
+              className="text-sm flex items-center gap-1.5 transition-colors"
+              style={{ color: "var(--text-3)" }}
+            >
               Browse all repositories
-              <svg className="w-3 h-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+              <svg className="w-3 h-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M3 8h10M9 4l4 4-4 4"/>
+              </svg>
             </a>
           </div>
+
           {loading ? (
             <div className="grid gap-4 md:grid-cols-2">
               {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="h-40 animate-pulse rounded-2xl border border-white/5 bg-white/2" />
+                <div
+                  key={i}
+                  className="h-40 animate-pulse rounded-2xl"
+                  style={{ border: "1px solid var(--border-col)", background: "var(--bg-card)" }}
+                />
               ))}
             </div>
           ) : repos.length === 0 ? (
-            <p className="text-center text-sm text-white/25">No projects yet. Add some repos on GitHub!</p>
+            <p className="text-center text-sm" style={{ color: "var(--text-3)" }}>
+              No projects yet. Add some repos on GitHub!
+            </p>
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
               {repos.map((repo) => (
-                <a key={repo.id} href={repo.html_url} target="_blank" rel="noreferrer"
-                  className="group relative flex flex-col gap-3 rounded-2xl border border-white/6 bg-[#0c1119] p-6 transition-all duration-300 hover:border-white/14] hover:bg-[#0f1520] hover:shadow-[0_0_40px_rgba(255,255,255,0.03)]">
-                  {/* Top-right arrow */}
-                  <div className="absolute top-5 right-5 flex h-7 w-7 items-center justify-center rounded-lg border border-white/8 bg-[#141d2b] opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-                    <svg className="h-3.5 w-3.5 text-white/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <a
+                  key={repo.id}
+                  href={repo.html_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group relative flex flex-col gap-3 rounded-2xl p-6 transition-all duration-300"
+                  style={{ border: "1px solid var(--border-col)", background: "var(--bg-card)" }}
+                >
+                  <div
+                    className="absolute top-5 right-5 flex h-7 w-7 items-center justify-center rounded-lg opacity-0 transition-all duration-300 group-hover:opacity-100"
+                    style={{ border: "1px solid var(--border-col)", background: "var(--bg-card3)" }}
+                  >
+                    <svg className="h-3.5 w-3.5" style={{ color: "var(--text-2)" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                       <path d="M7 17L17 7M17 7H7M17 7v10" />
                     </svg>
                   </div>
-                  <h3 className="pr-8 text-base font-semibold text-white/70 transition-colors duration-200 group-hover:text-white">{repo.name}</h3>
+                  <h3 className="pr-8 text-base font-semibold" style={{ color: "var(--text-2)" }}>
+                    {repo.name}
+                  </h3>
                   {repo.description && (
-                    <p className="line-clamp-2 text-sm leading-relaxed text-white/30">{repo.description}</p>
+                    <p className="line-clamp-2 text-sm leading-relaxed" style={{ color: "var(--text-3)" }}>
+                      {repo.description}
+                    </p>
                   )}
-                  <div className="mt-auto flex items-center gap-4 pt-2 border-t border-white/5">
+                  <div
+                    className="mt-auto flex items-center gap-4 pt-2"
+                    style={{ borderTop: "1px solid var(--border-col)" }}
+                  >
                     {repo.language && (
-                      <span className="flex items-center gap-1.5 text-xs text-white/25">
+                      <span className="flex items-center gap-1.5 text-xs" style={{ color: "var(--text-3)" }}>
                         <span className="h-2 w-2 rounded-full" style={{ backgroundColor: LANG_COLORS[repo.language] ?? "#888" }} />
                         {repo.language}
                       </span>
                     )}
                     {repo.stargazers_count > 0 && (
-                      <span className="flex items-center gap-1 text-xs text-white/25">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                      <span className="flex items-center gap-1 text-xs" style={{ color: "var(--text-3)" }}>
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
                         {repo.stargazers_count}
                       </span>
                     )}
                     {repo.homepage && (
-                      <a href={repo.homepage} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}
-                        className="ml-auto text-xs text-white/25 transition-colors hover:text-white/60">
+                      <a
+                        href={repo.homepage}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="ml-auto text-xs transition-colors"
+                        style={{ color: "var(--text-3)" }}
+                      >
                         Live →
                       </a>
                     )}
@@ -437,25 +546,35 @@ export default function Home() {
 
         <Divider />
 
-        {/* ── Contact ─────────────────────────────────────── */}
+        {/* ── Contact ── */}
         <section id="contact" className="py-24 pb-32">
           <SectionHeading sub="04 — let's work together">Contact me.</SectionHeading>
           <div className="grid gap-14 md:grid-cols-[1fr_220px]">
             <div>
-              <p className="mb-8 text-sm leading-relaxed text-white/35">
+              <p className="mb-8 text-sm leading-relaxed" style={{ color: "var(--text-3)" }}>
                 Want to order a project, or just want to stay in touch? Fill out the form below and I'll get back to you as soon as possible.
               </p>
               <ContactForm />
             </div>
             <div>
-              <p className="mb-4 text-xs uppercase tracking-widest text-white/20">Find me on</p>
+              <p className="mb-4 text-xs uppercase tracking-widest" style={{ color: "var(--text-4)" }}>
+                Find me on
+              </p>
               <div className="flex flex-col gap-2">
                 {SOCIAL_LINKS.map((s) => (
-                  <a key={s.label} href={s.href} target="_blank" rel="noreferrer"
-                    className="group flex items-center gap-3 rounded-xl border border-white/[0.07] bg-[#0f1520] px-4 py-3 text-sm text-white/40 transition-all duration-200 hover:border-white/15 hover:bg-[#141d2b] hover:text-white">
+                  <a
+                    key={s.label}
+                    href={s.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition-all duration-200"
+                    style={{ border: "1px solid var(--border-col)", background: "var(--bg-card2)", color: "var(--text-2)" }}
+                  >
                     <span className="shrink-0 transition-transform duration-200 group-hover:scale-110">{s.icon}</span>
                     {s.label}
-                    <svg className="ml-auto h-3 w-3 opacity-0 transition-all duration-200 group-hover:opacity-40 group-hover:translate-x-0.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+                    <svg className="ml-auto h-3 w-3 opacity-0 transition-all duration-200 group-hover:opacity-40" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M3 8h10M9 4l4 4-4 4"/>
+                    </svg>
                   </a>
                 ))}
               </div>
