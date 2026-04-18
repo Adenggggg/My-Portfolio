@@ -1,5 +1,3 @@
-// ✏️ Replace placeholder links and fill in your real project data here
-
 type Project = {
   title: string;
   description: string;
