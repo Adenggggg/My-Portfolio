@@ -149,21 +149,21 @@ body {
 }
 
 [data-theme="light"] {
-  --bg-base:    #f4f3ee;
-  --bg-card:    #eceae3;
-  --bg-card2:   #e5e3db;
-  --bg-card3:   #dddbd2;
-  --border-col:     rgba(0, 0, 0, 0.08);
-  --border-hov: rgba(0, 0, 0, 0.18);
-  --text-1:     rgba(0, 0, 0, 0.82);
-  --text-2:     rgba(0, 0, 0, 0.50);
-  --text-3:     rgba(0, 0, 0, 0.35);
-  --text-4:     rgba(0, 0, 0, 0.20);
-  --grid:       rgba(0, 0, 0, 0.04);
-  --glow-a:     rgba(56, 100, 200, 0.04);
-  --glow-b:     rgba(100, 60, 200, 0.03);
-  --btn-bg:     #111111;
-  --btn-text:   #ffffff;
+  --bg-base:    #f8fafc;
+  --bg-card:    #eceff1;
+  --bg-card2:   #dfe3e7;
+  --bg-card3:   #cbd2d9;
+  --border-col: rgba(31, 41, 51, 0.14);
+  --border-hov: rgba(31, 41, 51, 0.30);
+  --text-1:     #1f2933;
+  --text-2:     #3e4c59;
+  --text-3:     #616e7c;
+  --text-4:     #7b8794;
+  --grid:       rgba(31, 41, 51, 0.05);
+  --glow-a:     rgba(59, 91, 219, 0.05);
+  --glow-b:     rgba(100, 60, 200, 0.04);
+  --btn-bg:     #1f2933;
+  --btn-text:   #f8fafc;
 }
 
 @layer base {

@@ -147,13 +147,13 @@ export default function Designs() {
             <p className="text-sm" style={{ color: "var(--text-3)" }}>
               {activeTab === "figma" ? "Figma projects coming soon." : "Artworks coming soon."}
             </p>
-            <p className="mt-1 text-xs" style={{ color: "var(--text-4)" }}>
+            {/* <p className="mt-1 text-xs" style={{ color: "var(--text-4)" }}>
               Add items to the{" "}
               <code style={{ color: "var(--text-3)" }}>
                 {activeTab === "figma" ? "figmaDesigns" : "artDesigns"}
               </code>{" "}
               array at the top of this file.
-            </p>
+            </p> */}
           </div>
         ) : (
           <div key={activeTab} className="columns-2 gap-4 space-y-4 md:columns-3">

@@ -50,10 +50,23 @@ const TECH_STACK = [
 function useGitHubStats(username: string) {
   const [stats, setStats] = useState<GitHubStats | null>(null);
   useEffect(() => {
+    let cancelled = false;
     fetch(`https://api.github.com/users/${username}`)
-      .then((r) => r.json())
-      .then((d) => setStats({ repos: d.public_repos ?? 0, followers: d.followers ?? 0, following: d.following ?? 0 }))
-      .catch(() => {});
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error("GitHub stats request failed"))))
+      .then((d) => {
+        if (cancelled) return;
+        setStats({
+          repos: typeof d?.public_repos === "number" ? d.public_repos : 0,
+          followers: typeof d?.followers === "number" ? d.followers : 0,
+          following: typeof d?.following === "number" ? d.following : 0,
+        });
+      })
+      .catch(() => {
+        if (!cancelled) setStats(null);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [username]);
   return stats;
 }
@@ -62,14 +75,32 @@ function useRepos(username: string) {
   const [repos, setRepos] = useState<Repo[]>([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
     fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=6`)
-      .then((r) => r.json())
-      .then((data: Repo[]) => {
-        if (!Array.isArray(data)) { setLoading(false); return; }
-        setRepos(data.filter((r) => !r.name.toLowerCase().includes(username.toLowerCase())).slice(0, 6));
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error("GitHub repos request failed"))))
+      .then((data: unknown) => {
+        if (cancelled) return;
+        if (!Array.isArray(data)) {
+          setRepos([]);
+          setLoading(false);
+          return;
+        }
+        const filtered = (data as Repo[]).filter(
+          (r) => r && typeof r.name === "string" && !r.name.toLowerCase().includes(username.toLowerCase())
+        );
+        setRepos(filtered.slice(0, 6));
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {
+        if (!cancelled) {
+          setRepos([]);
+          setLoading(false);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [username]);
   return { repos, loading };
 }
@@ -78,13 +109,20 @@ function useRepos(username: string) {
 function AnimatedCount({ target }: { target: number }) {
   const [count, setCount] = useState(0);
   useEffect(() => {
-    if (target === 0) return;
+    if (!Number.isFinite(target) || target <= 0) {
+      setCount(0);
+      return;
+    }
     let start = 0;
-    const step = Math.ceil(target / 40);
+    const step = Math.max(1, Math.ceil(target / 40));
     const timer = setInterval(() => {
       start += step;
-      if (start >= target) { setCount(target); clearInterval(timer); }
-      else setCount(start);
+      if (start >= target) {
+        setCount(target);
+        clearInterval(timer);
+      } else {
+        setCount(start);
+      }
     }, 30);
     return () => clearInterval(timer);
   }, [target]);
@@ -145,10 +183,10 @@ function TechCarousel() {
         style={{ background: "linear-gradient(to left, var(--bg-base), transparent)" }}
       />
       <div className="flex gap-3" style={{ animation: "marquee-l 65s linear infinite", width: "max-content" }}>
-        {row1.map((t, i) => <TechPill key={`a-${i}`} {...t} />)}
+        {row1.map((t, i) => <TechPill key={`a-${i}`} name={t.name} icon={t.icon} />)}
       </div>
       <div className="flex gap-3" style={{ animation: "marquee-r 75s linear infinite", width: "max-content" }}>
-        {row2.map((t, i) => <TechPill key={`b-${i}`} {...t} />)}
+        {row2.map((t, i) => <TechPill key={`b-${i}`} name={t.name} icon={t.icon} />)}
       </div>
       <style>{`
         @keyframes marquee-l { from { transform: translateX(0) } to { transform: translateX(-50%) } }
@@ -164,7 +202,10 @@ function ContactForm() {
   const [status, setStatus] = useState<FormState>("idle");
 
   const submit = async () => {
-    if (!form.name || !form.email || !form.message) return;
+    if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
+      setStatus("error");
+      return;
+    }
     setStatus("sending");
     try {
       const res = await fetch("/api/contact", {
@@ -172,9 +213,15 @@ function ContactForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-      if (res.ok) { setStatus("success"); setForm({ name: "", email: "", message: "" }); }
-      else setStatus("error");
-    } catch { setStatus("error"); }
+      if (res.ok) {
+        setStatus("success");
+        setForm({ name: "", email: "", message: "" });
+      } else {
+        setStatus("error");
+      }
+    } catch {
+      setStatus("error");
+    }
   };
 
   const inputStyle = {
@@ -187,47 +234,51 @@ function ContactForm() {
     <div className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="mb-2 block text-xs uppercase tracking-widest" style={{ color: "var(--text-3)" }}>
+          <label htmlFor="contact-name" className="mb-2 block text-xs uppercase tracking-widest" style={{ color: "var(--text-3)" }}>
             Name <span style={{ color: "var(--text-4)" }}>*</span>
           </label>
           <input
+            id="contact-name"
             type="text"
             placeholder="Your name"
             value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
             className="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200"
             style={inputStyle}
           />
         </div>
         <div>
-          <label className="mb-2 block text-xs uppercase tracking-widest" style={{ color: "var(--text-3)" }}>
+          <label htmlFor="contact-email" className="mb-2 block text-xs uppercase tracking-widest" style={{ color: "var(--text-3)" }}>
             Email <span style={{ color: "var(--text-4)" }}>*</span>
           </label>
           <input
+            id="contact-email"
             type="email"
             placeholder="you@example.com"
             value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
             className="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200"
             style={inputStyle}
           />
         </div>
       </div>
       <div>
-        <label className="mb-2 block text-xs uppercase tracking-widest" style={{ color: "var(--text-3)" }}>
+        <label htmlFor="contact-message" className="mb-2 block text-xs uppercase tracking-widest" style={{ color: "var(--text-3)" }}>
           Message <span style={{ color: "var(--text-4)" }}>*</span>
         </label>
         <textarea
+          id="contact-message"
           rows={5}
           placeholder="Tell me about your project…"
           value={form.message}
-          onChange={(e) => setForm({ ...form, message: e.target.value })}
+          onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
           className="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200 resize-none"
           style={inputStyle}
         />
       </div>
       <div className="flex items-center gap-4">
         <button
+          type="button"
           onClick={submit}
           disabled={status === "sending"}
           className="rounded-xl px-8 py-3.5 text-sm font-semibold transition-all duration-300 disabled:opacity-50"
@@ -238,11 +289,11 @@ function ContactForm() {
         {status === "success" && (
           <p className="flex items-center gap-2 text-sm text-emerald-500">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Sent! I'll get back to you soon.
+            Sent! I&apos;ll get back to you soon.
           </p>
         )}
         {status === "error" && (
-          <p className="text-sm text-red-500">Something went wrong. Try again.</p>
+          <p className="text-sm text-red-500">Please fill out all fields, then try again.</p>
         )}
       </div>
     </div>
@@ -261,11 +312,116 @@ function Divider() {
   );
 }
 
+// ─── Repo card (mac-window style) ──────────────────────────────
+function RepoCard({ repo }: { repo: Repo }) {
+  return (
+    <a
+      href={repo.html_url}
+      target="_blank"
+      rel="noreferrer"
+      className="group relative flex flex-col overflow-hidden rounded-2xl transition-all duration-300"
+      style={{ border: "1px solid var(--border-col)", background: "var(--bg-card)" }}
+    >
+      {/* Title bar with traffic-light dots */}
+      <div
+        className="flex items-center gap-1.5 px-4 py-3"
+        style={{ borderBottom: "1px solid var(--border-col)" }}
+      >
+        <span className="h-2.5 w-2.5 rounded-full" style={{ background: "#ff5f56" }} aria-hidden="true" />
+        <span className="h-2.5 w-2.5 rounded-full" style={{ background: "#ffbd2e" }} aria-hidden="true" />
+        <span className="h-2.5 w-2.5 rounded-full" style={{ background: "#27c93f" }} aria-hidden="true" />
+
+        <div
+          className="ml-auto flex h-6 w-6 items-center justify-center rounded-lg opacity-0 transition-all duration-300 group-hover:opacity-100"
+          style={{ border: "1px solid var(--border-col)", background: "var(--bg-card3)" }}
+        >
+          <svg className="h-3 w-3" style={{ color: "var(--text-2)" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M7 17L17 7M17 7H7M17 7v10" />
+          </svg>
+        </div>
+      </div>
+
+      {/* Header content */}
+      <div className="px-5 pt-4">
+        <h3 className="text-base font-semibold" style={{ color: "var(--text-1)" }}>
+          {repo.name}
+        </h3>
+        {repo.description && (
+          <p className="mt-1 line-clamp-2 text-sm leading-relaxed" style={{ color: "var(--text-3)" }}>
+            {repo.description}
+          </p>
+        )}
+
+        {/* Tag pills */}
+        {(repo.language || repo.stargazers_count > 0) && (
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            {repo.language && (
+              <span
+                className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium"
+                style={{ background: "var(--bg-card2)", color: "var(--text-2)" }}
+              >
+                <span
+                  className="h-1.5 w-1.5 rounded-full"
+                  style={{ backgroundColor: LANG_COLORS[repo.language] ?? "#888" }}
+                  aria-hidden="true"
+                />
+                {repo.language}
+              </span>
+            )}
+            {repo.stargazers_count > 0 && (
+              <span
+                className="flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium"
+                style={{ background: "var(--bg-card2)", color: "var(--text-2)" }}
+              >
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                </svg>
+                {repo.stargazers_count}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Code panel */}
+      <div className="p-5 pt-4">
+        <div
+          className="rounded-xl p-4 font-mono text-xs leading-relaxed break-all"
+          style={{ background: "var(--bg-card3)", border: "1px solid var(--border-col)", color: "var(--text-2)" }}
+        >
+          <span style={{ color: "var(--text-4)" }}>{"<"}</span>
+          <span style={{ color: "var(--text-1)" }}>repo</span>
+          <span style={{ color: "var(--text-4)" }}>{">"}</span>
+          {" "}
+          {repo.name}
+          {" "}
+          <span style={{ color: "var(--text-4)" }}>{"</"}</span>
+          <span style={{ color: "var(--text-1)" }}>repo</span>
+          <span style={{ color: "var(--text-4)" }}>{">"}</span>
+        </div>
+        {repo.homepage && (
+          <a
+            href={repo.homepage}
+            target="_blank"
+            rel="noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="mt-3 inline-flex items-center gap-1 text-xs transition-colors"
+            style={{ color: "var(--text-3)" }}
+          >
+            Live preview →
+          </a>
+        )}
+      </div>
+    </a>
+  );
+}
+
 // ─── Page ─────────────────────────────────────────────────────
 export default function Home() {
-  const { theme } = useTheme();
+  useTheme();
   const stats = useGitHubStats(GITHUB_USERNAME);
   const { repos, loading } = useRepos(GITHUB_USERNAME);
+  const currentYear = new Date().getFullYear();
 
   return (
     <div
@@ -396,7 +552,7 @@ export default function Home() {
                 { label: "Public Repos", value: stats.repos },
                 { label: "Followers",    value: stats.followers },
                 { label: "Following",    value: stats.following },
-                { label: "Years Active", value: new Date().getFullYear() - 2021 },
+                { label: "Years Active", value: Math.max(0, currentYear - 2021) },
               ].map((s, i, arr) => (
                 <div
                   key={s.label}
@@ -422,8 +578,8 @@ export default function Home() {
           <div className="relative flex flex-col items-center text-center">
             <SectionHeading sub="01 — who I am">About me.</SectionHeading>
             <div className="max-w-2xl space-y-5 text-base leading-[1.9]" style={{ color: "var(--text-2)" }}>
-              <p>I'm a full-stack developer and UI/UX designer from Bulacan, Philippines. I take pride in building products that are not just functional, but visually intentional and user-centered.</p>
-              <p>I enjoy the entire product lifecycle — from wireframes in Figma to deploying scalable applications. I've worked across design tools, front-end frameworks, and back-end systems.</p>
+              <p>I&apos;m a full-stack developer and UI/UX designer from Bulacan, Philippines. I take pride in building products that are not just functional, but visually intentional and user-centered.</p>
+              <p>I enjoy the entire product lifecycle — from wireframes in Figma to deploying scalable applications. I&apos;ve worked across design tools, front-end frameworks, and back-end systems.</p>
               <p>Currently open to freelance collaborations and interesting projects.</p>
             </div>
             <div className="mt-10 flex flex-wrap justify-center gap-2">
@@ -483,62 +639,7 @@ export default function Home() {
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
               {repos.map((repo) => (
-                <a
-                  key={repo.id}
-                  href={repo.html_url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="group relative flex flex-col gap-3 rounded-2xl p-6 transition-all duration-300"
-                  style={{ border: "1px solid var(--border-col)", background: "var(--bg-card)" }}
-                >
-                  <div
-                    className="absolute top-5 right-5 flex h-7 w-7 items-center justify-center rounded-lg opacity-0 transition-all duration-300 group-hover:opacity-100"
-                    style={{ border: "1px solid var(--border-col)", background: "var(--bg-card3)" }}
-                  >
-                    <svg className="h-3.5 w-3.5" style={{ color: "var(--text-2)" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <path d="M7 17L17 7M17 7H7M17 7v10" />
-                    </svg>
-                  </div>
-                  <h3 className="pr-8 text-base font-semibold" style={{ color: "var(--text-2)" }}>
-                    {repo.name}
-                  </h3>
-                  {repo.description && (
-                    <p className="line-clamp-2 text-sm leading-relaxed" style={{ color: "var(--text-3)" }}>
-                      {repo.description}
-                    </p>
-                  )}
-                  <div
-                    className="mt-auto flex items-center gap-4 pt-2"
-                    style={{ borderTop: "1px solid var(--border-col)" }}
-                  >
-                    {repo.language && (
-                      <span className="flex items-center gap-1.5 text-xs" style={{ color: "var(--text-3)" }}>
-                        <span className="h-2 w-2 rounded-full" style={{ backgroundColor: LANG_COLORS[repo.language] ?? "#888" }} />
-                        {repo.language}
-                      </span>
-                    )}
-                    {repo.stargazers_count > 0 && (
-                      <span className="flex items-center gap-1 text-xs" style={{ color: "var(--text-3)" }}>
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                        </svg>
-                        {repo.stargazers_count}
-                      </span>
-                    )}
-                    {repo.homepage && (
-                      <a
-                        href={repo.homepage}
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="ml-auto text-xs transition-colors"
-                        style={{ color: "var(--text-3)" }}
-                      >
-                        Live →
-                      </a>
-                    )}
-                  </div>
-                </a>
+                <RepoCard key={repo.id} repo={repo} />
               ))}
             </div>
           )}
@@ -552,7 +653,7 @@ export default function Home() {
           <div className="grid gap-14 md:grid-cols-[1fr_220px]">
             <div>
               <p className="mb-8 text-sm leading-relaxed" style={{ color: "var(--text-3)" }}>
-                Want to order a project, or just want to stay in touch? Fill out the form below and I'll get back to you as soon as possible.
+                Want to order a project, or just want to stay in touch? Fill out the form below and I&apos;ll get back to you as soon as possible.
               </p>
               <ContactForm />
             </div>
