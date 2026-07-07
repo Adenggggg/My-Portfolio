@@ -92,8 +92,12 @@ function VideoCard({ video, featured = false, onOpen }: { video: Video; featured
   return (
     <div className="cursor-pointer" onClick={() => onOpen(video)}>
       <div
-        className="relative overflow-hidden rounded-xl"
-        style={{ aspectRatio: featured ? "16/7" : "16/9", border: "1px solid var(--border-col)", background: "var(--bg-card)" }}
+        className={
+          featured
+            ? "relative overflow-hidden rounded-xl aspect-video md:aspect-16/7"
+            : "relative overflow-hidden rounded-xl aspect-video"
+        }
+        style={{ border: "1px solid var(--border-col)", background: "var(--bg-card)" }}
         onMouseEnter={onEnter}
         onMouseLeave={onLeave}
       >
@@ -162,10 +166,10 @@ function VideoCard({ video, featured = false, onOpen }: { video: Video; featured
 
         {/* Featured overlay text */}
         {featured && (
-          <div className="absolute bottom-6 left-6">
-            <p className="text-[22px] font-semibold text-white">{video.title}</p>
+          <div className="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-auto">
+            <p className="text-lg md:text-[22px] font-semibold text-white">{video.title}</p>
             {video.description && (
-              <p className="mt-1.5 max-w-md text-sm leading-snug" style={{ color: "rgba(255,255,255,0.45)" }}>
+              <p className="mt-1.5 max-w-md text-xs md:text-sm leading-snug" style={{ color: "rgba(255,255,255,0.45)" }}>
                 {video.description}
               </p>
             )}
