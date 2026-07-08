@@ -1,5 +1,5 @@
 import { GITHUB_USERNAME } from "~/data/social-links";
-import { useGitHubStats } from "~/hooks/useGithubStats";
+import { useGitHubStats } from "~/hooks/useGitHubStats";
 import { useAnimatedCount } from "~/hooks/useAnimatedCount";
 
 function StatBlock({ label, value, isLast }: { label: string; value: number; isLast: boolean }) {

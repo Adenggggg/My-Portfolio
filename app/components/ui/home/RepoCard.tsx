@@ -1,5 +1,5 @@
 import { LANG_COLORS } from "~/data/lang-color";
-import type { Repo } from "~/hooks/useRepo";
+import type { Repo } from "~/hooks/useRepos";
 
 export function RepoCard({ repo }: { repo: Repo }) {
   return (

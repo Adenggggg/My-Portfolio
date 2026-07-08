@@ -1,6 +1,6 @@
 import { SectionHeading } from "~/components/ui/SectionHeading";
-import { RepoCard } from "~/components/ui/home/repoCard";
-import { useRepos } from "~/hooks/useRepo";
+import { RepoCard } from "~/components/ui/home/RepoCard";
+import { useRepos } from "~/hooks/useRepos";
 import { GITHUB_USERNAME } from "~/data/social-links";
 
 export function ProjectsSection() {
