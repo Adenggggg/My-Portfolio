@@ -1,5 +1,5 @@
 import { TECH_STACK } from "~/data/tech-stack";
-import { TechPill } from "~/components/ui/home/techPill";
+import { TechPill } from "~/components/ui/home/TechPill";
 
 export function TechCarousel() {
   const row1 = [...TECH_STACK, ...TECH_STACK];

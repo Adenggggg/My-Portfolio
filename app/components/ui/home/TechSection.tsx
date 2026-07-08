@@ -1,5 +1,5 @@
 import { SectionHeading } from "~/components/ui/SectionHeading";
-import { TechCarousel } from "~/components/ui/home/techCarousel";
+import { TechCarousel } from "~/components/ui/home/TechCarousel";
 
 export function TechSection() {
   return (
