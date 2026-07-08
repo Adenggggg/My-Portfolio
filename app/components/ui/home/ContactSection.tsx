@@ -1,5 +1,5 @@
 import { SectionHeading } from "~/components/ui/SectionHeading";
-import { ContactForm } from "~/components/ui/home/contactForm";
+import { ContactForm } from "~/components/ui/home/ContactForm";
 import { SOCIAL_LINKS } from "~/data/social-links";
 
 export function ContactSection() {
