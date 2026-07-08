@@ -1,10 +1,10 @@
 import { PageShell } from "~/components/ui/PageShell";
 import { Divider } from "~/components/ui/Divider";
-import { Hero } from "~/components/ui/home/hero";
-import { AboutSection } from "~/components/ui/home/aboutSection";
-import { TechSection } from "~/components/ui/home/techSection";
-import { ProjectsSection } from "~/components/ui/home/projectsSection";
-import { ContactSection } from "~/components/ui/home/contactSection";
+import { Hero } from "~/components/ui/home/Hero";
+import { AboutSection } from "~/components/ui/home/AboutSection";
+import { TechSection } from "~/components/ui/home/TechSection";
+import { ProjectsSection } from "~/components/ui/home/ProjectsSection";
+import { ContactSection } from "~/components/ui/home/ContactSection";
 
 export default function Home() {
   return (
