@@ -1,13 +1,15 @@
 import { useRef, useState, useEffect } from "react";
 
 const videos = [
-  { title: "Bukid",          url: "/videos/Bukid.mp4",          description: "Cinematic drone highlight of scenic countryside views, showcasing lush fields and peaceful rural landscapes.",                                                               tag: "Cinematic"    },
-  { title: "Bec and Geri's", url: "/videos/Bec_and_Geri's.mp4", description: "Commercial ad showcasing plant-based dishes at Bec and Geri's focused on fresh ingredients, healthy living, and sustainable dining.",                                        tag: "Commercial"   },
-  { title: "Rizal",          url: "/videos/Rizal.mp4",          description: "Video edit featuring José Rizal highlighting his life, legacy, and impact on Philippine history through cinematic and historical visuals.",                                    tag: "Documentary"  },
-  { title: "VinciPH",        url: "/videos/Vinci.ph.mp4",       description: "Commercial ad for Vinci PH showcasing original paintings with artistic detail, creativity, and premium craftsmanship.",                                                        tag: "Commercial"   },
-  { title: "Pugpog",         url: "/videos/Pugpog.mp4",         description: "Bike travel highlight featuring rugged highland trails and scenic mountain routes of Pugpog Biker Highlands.",                                                                 tag: "Travel"       },
-  { title: "El Rio",         url: "/videos/El_Rio.mp4",         description: "Cinematic travel highlight of El Rio Adventura Café at San Rafael River Adventure featuring serene riverside views.",                                                          tag: "Travel"       },
-  { title: "Lobo Batangas",  url: "/videos/Lobo.mp4",           description: "Cinematic nature highlight showcasing the lush forests, coastal landscapes, and serene natural beauty of Lobo, Batangas.",                                                    tag: "Cinematic"    },
+  { title: "Bukid",          url: "/videos/Bukid.mp4",          description: "Cinematic drone highlight of scenic countryside views, showcasing lush fields and peaceful rural landscapes.", tag: "Cinematic"},
+  { title: "Bec and Geri's", url: "/videos/Bec_and_Geri's.mp4", description: "Commercial ad showcasing plant-based dishes at Bec and Geri's focused on fresh ingredients, healthy living, and sustainable dining.",tag: "Commercial"},
+  { title: "Rizal",          url: "/videos/Rizal.mp4",          description: "Video edit featuring José Rizal highlighting his life, legacy, and impact on Philippine history through cinematic and historical visuals.", tag: "Documentary"},
+  { title: "VinciPH",        url: "/videos/Vinci.ph.mp4",       description: "Commercial ad for Vinci PH showcasing original paintings with artistic detail, creativity, and premium craftsmanship.", tag: "Commercial"},
+  { title: "Pugpog",         url: "/videos/Pugpog.mp4",         description: "Bike travel highlight featuring rugged highland trails and scenic mountain routes of Pugpog Biker Highlands.", tag: "Travel"},
+  { title: "El Rio",         url: "/videos/El_Rio.mp4",         description: "Cinematic travel highlight of El Rio Adventura Café at San Rafael River Adventure featuring serene riverside views.", tag: "Travel"},
+  { title: "Lobo Batangas",  url: "/videos/Lobo.mp4",           description: "Cinematic nature highlight showcasing the lush forests, coastal landscapes, and serene natural beauty of Lobo, Batangas.", tag: "Cinematic"},
+  { title: "San Rafael",  url: "/videos/San_Rafael.mp4",        description: "Off-road bike ride highlight through the rivers and greenery of San Rafael, Bulacan, capped off with a chill break under the trees.", tag: "Travel"},
+  { title: "Zambales",  url: "/videos/Zambales.mp4",          description: "Island hopping highlight from Liwliwa and Pundaquit to Anawangin and Capones, capturing the coves, coastlines, and boat rides of Zambales.", tag: "Travel"},
 ];
 
 type Video = typeof videos[0];
@@ -94,6 +96,7 @@ function VideoCard({ video, featured = false, onOpen }: { video: Video; featured
       <div
         className={
           featured
+            // mobile keeps the same plain aspect-video box as regular cards; widens only at md+
             ? "relative overflow-hidden rounded-xl aspect-video md:aspect-16/7"
             : "relative overflow-hidden rounded-xl aspect-video"
         }
@@ -164,9 +167,9 @@ function VideoCard({ video, featured = false, onOpen }: { video: Video; featured
           </div>
         </div>
 
-        {/* Featured overlay text */}
+        {/* Featured overlay text — desktop only; mobile uses the below-card text like every other card */}
         {featured && (
-          <div className="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-auto">
+          <div className="hidden md:block absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-auto">
             <p className="text-lg md:text-[22px] font-semibold text-white">{video.title}</p>
             {video.description && (
               <p className="mt-1.5 max-w-md text-xs md:text-sm leading-snug" style={{ color: "rgba(255,255,255,0.45)" }}>
@@ -177,17 +180,15 @@ function VideoCard({ video, featured = false, onOpen }: { video: Video; featured
         )}
       </div>
 
-      {/* Below card info */}
-      {!featured && (
-        <div className="mt-3 pl-0.5">
-          <p className="text-sm font-semibold" style={{ color: "var(--text-1)" }}>{video.title}</p>
-          {video.description && (
-            <p className="mt-1 line-clamp-2 text-xs leading-relaxed" style={{ color: "var(--text-3)" }}>
-              {video.description}
-            </p>
-          )}
-        </div>
-      )}
+      {/* Below card info — shown for regular cards always, and for the featured card only on mobile */}
+      <div className={featured ? "mt-3 pl-0.5 md:hidden" : "mt-3 pl-0.5"}>
+        <p className="text-sm font-semibold" style={{ color: "var(--text-1)" }}>{video.title}</p>
+        {video.description && (
+          <p className="mt-1 line-clamp-2 text-xs leading-relaxed" style={{ color: "var(--text-3)" }}>
+            {video.description}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
