@@ -154,7 +154,7 @@ function ProjectCard({ project }: { project: Project }) {
         }
       }}
       className={`group relative flex cursor-pointer flex-col overflow-hidden rounded-2xl transition-all duration-300 ${
-        project.featured ? "md:col-span-2" : ""
+        project.featured ? "md:col-span-2 lg:col-span-1" : ""
       }`}
       style={{
         border: "1px solid var(--border-col)",
@@ -163,7 +163,7 @@ function ProjectCard({ project }: { project: Project }) {
     >
       <LivePreview url={project.link} title={project.title} />
 
-      <div className="relative flex flex-1 flex-col justify-between gap-5 p-6">
+      <div className="relative flex flex-1 flex-col justify-between gap-4 p-5">
         <svg
           className="absolute right-0 top-0 h-4 w-4 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
           style={{ color: "var(--text-4)" }}
@@ -175,7 +175,7 @@ function ProjectCard({ project }: { project: Project }) {
           <path d="M7 17L17 7M17 7H7M17 7v10" />
         </svg>
 
-        <div className="space-y-3 pr-6">
+        <div className="space-y-2.5 pr-6">
           <p
             className="font-mono text-[10px] uppercase tracking-[0.16em]"
             style={{ color: "var(--text-3)" }}
@@ -183,7 +183,7 @@ function ProjectCard({ project }: { project: Project }) {
             {project.category}
           </p>
           <h3
-            className="text-lg font-semibold leading-snug transition-colors"
+            className="text-base font-semibold leading-snug transition-colors"
             style={{ color: "var(--text-1)" }}
           >
             {project.title}
@@ -248,7 +248,7 @@ export default function Projects() {
         }}
       />
 
-      <div className="relative z-10 mx-auto max-w-5xl px-4 pb-24 pt-36 md:px-8">
+      <div className="relative z-10 mx-auto max-w-6xl px-4 pb-24 pt-36 md:px-8">
         <div className="mb-14">
           <p
             className="mb-2.5 font-mono text-[11px] uppercase tracking-[0.18em]"
@@ -270,7 +270,7 @@ export default function Projects() {
           </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {PROJECTS.map((project) => (
             <ProjectCard key={project.title} project={project} />
           ))}
