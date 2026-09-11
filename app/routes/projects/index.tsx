@@ -17,7 +17,7 @@ const PROJECTS: Project[] = [
     title: "My Portfolio",
     description:
       "Personal developer portfolio site showcasing projects, skills, and background.",
-    link: "https://my-portfolio-one-zeta-32.vercel.app/",
+    link: "https://adriane-dev.vercel.app",
     github: "https://github.com/Adenggggg/My-Portfolio",
     tags: ["TypeScript", "React"],
     category: "Portfolio",

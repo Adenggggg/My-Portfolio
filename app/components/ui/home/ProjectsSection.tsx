@@ -26,19 +26,16 @@ export function ProjectsSection() {
         </p>
       ) : (
         <div className="relative">
-          <div
-            className="grid gap-4 overflow-hidden md:grid-cols-2 md:overflow-visible"
-            style={{ maxHeight: "560px" }}
-          >
-            {repos.map((repo) => (
+          <div className="grid gap-4 md:grid-cols-2">
+            {repos.slice(0, 4).map((repo) => (
               <RepoCard key={repo.id} repo={repo} />
             ))}
           </div>
 
-          {repos.length > 3 && (
+          {repos.length > 4 && (
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-x-0 bottom-0 h-28 md:hidden"
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-28"
               style={{
                 background: "linear-gradient(to bottom, transparent, var(--bg-base))",
               }}
