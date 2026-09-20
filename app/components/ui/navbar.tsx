@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { NavLink } from "react-router";
 import { useTheme } from "~/lib/theme";
 
@@ -37,6 +37,8 @@ export default function Navbar() {
   const { theme, toggle } = useTheme();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [menuHeight, setMenuHeight] = useState(0);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -45,18 +47,28 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    const onResize = () => { if (window.innerWidth >= 768) setMenuOpen(false); };
+    const onResize = () => {
+      if (window.innerWidth >= 768) setMenuOpen(false);
+      if (menuRef.current) setMenuHeight(menuRef.current.scrollHeight);
+    };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
+
+  // Measure the real content height whenever the menu opens or the theme label changes
+  useEffect(() => {
+    if (menuRef.current) setMenuHeight(menuRef.current.scrollHeight);
+  }, [menuOpen, theme]);
+
+  const solid = scrolled || menuOpen;
 
   return (
     <header
       className="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
       style={{
-        background: scrolled ? "color-mix(in srgb, var(--bg-base) 80%, transparent)" : "transparent",
-        backdropFilter: scrolled ? "blur(12px)" : "none",
-        borderBottom: scrolled ? "1px solid var(--border-col)" : "1px solid transparent",
+        background: solid ? "color-mix(in srgb, var(--bg-base) 90%, transparent)" : "transparent",
+        backdropFilter: solid ? "blur(12px)" : "none",
+        borderBottom: solid ? "1px solid var(--border-col)" : "1px solid transparent",
       }}
     >
       <nav className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4 md:px-8">
@@ -132,6 +144,7 @@ export default function Navbar() {
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle menu"
+          aria-expanded={menuOpen}
           className="relative flex h-9 w-9 items-center justify-center rounded-lg transition-all duration-200 md:hidden"
           style={{
             border: "1px solid var(--border-col)",
@@ -156,9 +169,10 @@ export default function Navbar() {
       {/* ── Mobile menu ── */}
       <div
         className="overflow-hidden transition-all duration-300 md:hidden"
-        style={{ maxHeight: menuOpen ? "320px" : "0px", opacity: menuOpen ? 1 : 0 }}
+        style={{ maxHeight: menuOpen ? `${menuHeight}px` : "0px", opacity: menuOpen ? 1 : 0 }}
       >
         <div
+          ref={menuRef}
           className="px-4 py-4 backdrop-blur-xl"
           style={{
             borderTop: "1px solid var(--border-col)",
