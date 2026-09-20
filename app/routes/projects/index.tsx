@@ -40,6 +40,15 @@ const PROJECTS: Project[] = [
     tags: ["TypeScript"],
     category: "Web App",
   },
+    {
+    title: "Nurse Kit",
+    description:
+      "Nurse Recovery Kit is a cute mini website made to cheer up Ali after a rough shift.",
+    link: "https://nurse-kit.vercel.app/",
+    github: "https://github.com/Adenggggg/Nurse-Kit",
+    tags: ["TypeScript"],
+    category: "Web App",
+  },
 ];
 
 const TAG_COLORS: Record<string, { bg: string; text: string }> = {
