@@ -28,7 +28,7 @@ const PROJECTS: Project[] = [
       "A dating request app — lets users send, accept, or decline romantic interest requests in a clean, simple flow.",
     link: "https://master-jo-six.vercel.app/",
     github: "https://github.com/Adenggggg/Say-NO",
-    tags: ["TypeScript"],
+    tags: ["TypeScript", "React", "Remix"],
     category: "Dating App",
   },
   {
@@ -37,16 +37,16 @@ const PROJECTS: Project[] = [
       "A group savings monitoring app for tracking shared savings goals with friends, family, or a team.",
     link: "https://saving-tracker-gules.vercel.app/",
     github: "https://github.com/Adenggggg/Saving-Tracker",
-    tags: ["TypeScript"],
+    tags: ["TypeScript", "React", "Remix"],
     category: "Web App",
   },
     {
-    title: "Nurse Kit",
+    title: "UNKNOWN",
     description:
-      "Nurse Recovery Kit is a cute mini website made to cheer up Ali after a rough shift.",
-    link: "https://nurse-kit.vercel.app/",
-    github: "https://github.com/Adenggggg/Nurse-Kit",
-    tags: ["TypeScript"],
+      "A cozy, mobile-first interactive world to explore: step into a tiny house, drag the moon over a midnight beach, play small games, and snap a photobooth strip, all with soft sound and quiet secrets to find",
+    link: "https://unknown-universe.vercel.app/",
+    github: "https://github.com/Adenggggg/Unknown",
+    tags: ["TypeScript", "React", "Remix"],
     category: "Web App",
   },
 ];
