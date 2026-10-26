@@ -23,11 +23,11 @@ const PROJECTS: Project[] = [
     category: "Portfolio",
   },
   {
-    title: "Say-NO",
+    title: "Smiski",
     description:
       "A dating request app — lets users send, accept, or decline romantic interest requests in a clean, simple flow.",
-    link: "https://master-jo-six.vercel.app/",
-    github: "https://github.com/Adenggggg/Say-NO",
+    link: "https://smiski-psi.vercel.app/",
+    github: "https://github.com/Adenggggg/Smiski",
     tags: ["TypeScript", "React", "Remix"],
     category: "Dating App",
   },
