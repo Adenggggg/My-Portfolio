@@ -18,13 +18,15 @@ export function PageShell({ children, showSecondGlow = false }: PageShellProps) 
           backgroundImage:
             "linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px)",
           backgroundSize: "52px 52px",
+          maskImage: "radial-gradient(ellipse 120% 90% at 50% 0%, #000 55%, transparent 100%)",
+          WebkitMaskImage: "radial-gradient(ellipse 120% 90% at 50% 0%, #000 55%, transparent 100%)",
         }}
       />
 
       {/* Glow A */}
       <div
         aria-hidden
-        className="fixed pointer-events-none z-0"
+        className="drift fixed pointer-events-none z-0"
         style={{
           top: "-10%",
           left: "-10%",
@@ -38,7 +40,7 @@ export function PageShell({ children, showSecondGlow = false }: PageShellProps) 
       {showSecondGlow && (
         <div
           aria-hidden
-          className="fixed pointer-events-none z-0"
+          className="drift-2 fixed pointer-events-none z-0"
           style={{
             bottom: "-5%",
             right: "-10%",

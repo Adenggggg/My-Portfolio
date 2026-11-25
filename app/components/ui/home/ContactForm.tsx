@@ -61,7 +61,7 @@ export function ContactForm() {
             placeholder="Your name"
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-            className="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200"
+            className="field w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none"
             style={inputStyle}
           />
         </div>
@@ -75,7 +75,7 @@ export function ContactForm() {
             placeholder="you@example.com"
             value={form.email}
             onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-            className="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200"
+            className="field w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none"
             style={inputStyle}
           />
         </div>
@@ -91,7 +91,7 @@ export function ContactForm() {
           placeholder="Tell me about your project…"
           value={form.message}
           onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
-          className="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all duration-200 resize-none"
+          className="field w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none resize-none"
           style={inputStyle}
         />
       </div>
@@ -101,7 +101,7 @@ export function ContactForm() {
           type="button"
           onClick={submit}
           disabled={status === "sending"}
-          className="rounded-xl px-8 py-3.5 text-sm font-semibold transition-all duration-300 disabled:opacity-50"
+          className="btn-shine rounded-xl px-8 py-3.5 text-sm font-semibold transition-all duration-300 hover:-translate-y-px disabled:opacity-50"
           style={{ background: "var(--btn-bg)", color: "var(--btn-text)" }}
         >
           {status === "sending" ? "Sending…" : "Send Message"}

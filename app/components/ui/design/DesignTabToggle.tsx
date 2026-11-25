@@ -20,7 +20,7 @@ export function DesignTabToggle({
         style={{ border: "1px solid var(--border-col)", background: "var(--bg-card)" }}
       >
         <div
-          className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-lg transition-all duration-300 ease-in-out"
+          className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-lg shadow-lg transition-all duration-500 ease-[cubic-bezier(.22,1,.36,1)]"
           style={{
             background: "var(--btn-bg)",
             left: active === "figma" ? "4px" : "calc(50%)",

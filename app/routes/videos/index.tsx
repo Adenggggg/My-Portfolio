@@ -92,13 +92,13 @@ function VideoCard({ video, featured = false, onOpen }: { video: Video; featured
   };
 
   return (
-    <div className="cursor-pointer" onClick={() => onOpen(video)}>
+    <div className="group cursor-pointer" onClick={() => onOpen(video)}>
       <div
         className={
           featured
             // mobile keeps the same plain aspect-video box as regular cards; widens only at md+
-            ? "relative overflow-hidden rounded-xl aspect-video md:aspect-16/7"
-            : "relative overflow-hidden rounded-xl aspect-video"
+            ? "lift relative overflow-hidden rounded-xl aspect-video md:aspect-16/7"
+            : "lift relative overflow-hidden rounded-xl aspect-video"
         }
         style={{ border: "1px solid var(--border-col)", background: "var(--bg-card)" }}
         onMouseEnter={onEnter}
@@ -158,7 +158,7 @@ function VideoCard({ video, featured = false, onOpen }: { video: Video; featured
         {/* Play button */}
         <div className={`pointer-events-none absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${playing ? "opacity-0" : "opacity-100"}`}>
           <div
-            className="flex h-12 w-12 items-center justify-center rounded-full backdrop-blur-md"
+            className="flex h-12 w-12 items-center justify-center rounded-full backdrop-blur-md transition-transform duration-300 group-hover:scale-110"
             style={{ border: "1px solid rgba(255,255,255,0.2)", background: "rgba(255,255,255,0.1)" }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="white" style={{ marginLeft: "2px" }}>
@@ -182,7 +182,7 @@ function VideoCard({ video, featured = false, onOpen }: { video: Video; featured
 
       {/* Below card info — shown for regular cards always, and for the featured card only on mobile */}
       <div className={featured ? "mt-3 pl-0.5 md:hidden" : "mt-3 pl-0.5"}>
-        <p className="text-sm font-semibold" style={{ color: "var(--text-1)" }}>{video.title}</p>
+        <p className="text-sm font-semibold transition-transform duration-300 group-hover:translate-x-0.5" style={{ color: "var(--text-1)" }}>{video.title}</p>
         {video.description && (
           <p className="mt-1 line-clamp-2 text-xs leading-relaxed" style={{ color: "var(--text-3)" }}>
             {video.description}
@@ -230,7 +230,7 @@ export default function Videos() {
         {/* Glow */}
         <div
           aria-hidden
-          className="fixed left-0 top-0 pointer-events-none z-0"
+          className="drift fixed left-0 top-0 pointer-events-none z-0"
           style={{ width: "600px", height: "500px", background: "radial-gradient(ellipse at 0% 0%, var(--glow-a), transparent 70%)" }}
         />
 

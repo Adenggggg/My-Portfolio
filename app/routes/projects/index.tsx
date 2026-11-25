@@ -94,7 +94,7 @@ function LivePreview({ url, title }: { url: string; title: string }) {
     >
       {!failed && (
         <div
-          className="pointer-events-none absolute left-0 top-0 origin-top-left"
+          className="pointer-events-none absolute left-0 top-0 origin-top-left transition-[filter] duration-500 group-hover:brightness-110"
           style={{ width: "400%", height: "400%", transform: "scale(0.25)" }}
         >
           <iframe
@@ -162,7 +162,7 @@ function ProjectCard({ project }: { project: Project }) {
           window.open(project.link, "_blank", "noreferrer");
         }
       }}
-      className={`group relative flex cursor-pointer flex-col overflow-hidden rounded-2xl transition-all duration-300 ${
+      className={`spotlight lift group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl ${
         project.featured ? "md:col-span-2 lg:col-span-1" : ""
       }`}
       style={{
@@ -192,7 +192,7 @@ function ProjectCard({ project }: { project: Project }) {
             {project.category}
           </p>
           <h3
-            className="text-base font-semibold leading-snug transition-colors"
+            className="text-base font-semibold leading-snug transition-transform duration-300 group-hover:translate-x-0.5"
             style={{ color: "var(--text-1)" }}
           >
             {project.title}
@@ -215,7 +215,7 @@ function ProjectCard({ project }: { project: Project }) {
               target="_blank"
               rel="noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="ml-auto flex items-center gap-1.5 text-xs transition-colors"
+              className="hover-text-1 ml-auto flex items-center gap-1.5 text-xs transition-colors"
               style={{ color: "var(--text-3)" }}
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
@@ -248,7 +248,7 @@ export default function Projects() {
 
       <div
         aria-hidden
-        className="fixed left-0 top-0 pointer-events-none z-0"
+        className="drift fixed left-0 top-0 pointer-events-none z-0"
         style={{
           width: "600px",
           height: "500px",
@@ -258,7 +258,7 @@ export default function Projects() {
       />
 
       <div className="relative z-10 mx-auto max-w-6xl px-4 pb-24 pt-36 md:px-8">
-        <div className="mb-14">
+        <div className="enter enter-1 mb-14">
           <p
             className="mb-2.5 font-mono text-[11px] uppercase tracking-[0.18em]"
             style={{ color: "var(--text-3)" }}
@@ -280,8 +280,10 @@ export default function Projects() {
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {PROJECTS.map((project) => (
-            <ProjectCard key={project.title} project={project} />
+          {PROJECTS.map((project, i) => (
+            <div key={project.title} data-reveal style={{ ["--d" as string]: `${(i % 3) * 100}ms` }}>
+              <ProjectCard project={project} />
+            </div>
           ))}
         </div>
       </div>

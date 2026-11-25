@@ -51,7 +51,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="max-w-xs">
             <div className="mb-3 flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
               <span className="text-sm font-semibold" style={{ color: "var(--text-1)" }}>
                 adriane<span style={{ color: "var(--text-3)" }}>.</span>
               </span>
@@ -71,7 +71,7 @@ export default function Footer() {
                 <li key={link.label}>
                   <NavLink
                     to={link.to}
-                    className="text-sm transition-colors duration-200"
+                    className="hover-text-1 text-sm transition-colors duration-200"
                     style={({ isActive }) => ({
                       color: isActive ? "var(--text-1)" : "var(--text-3)",
                     })}
@@ -95,7 +95,7 @@ export default function Footer() {
                     href={s.href}
                     target={s.href.startsWith("http") ? "_blank" : undefined}
                     rel="noreferrer"
-                    className="flex items-center gap-2 text-sm transition-colors duration-200"
+                    className="hover-text-1 flex items-center gap-2 text-sm transition-colors duration-200"
                     style={{ color: "var(--text-3)" }}
                   >
                     {s.label}

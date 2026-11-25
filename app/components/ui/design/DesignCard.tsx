@@ -12,14 +12,14 @@ export function DesignCard({ design }: { design: Design }) {
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") setRevealed((r) => !r);
       }}
-      className="group relative break-inside-avoid overflow-hidden rounded-xl"
+      className="lift group relative break-inside-avoid cursor-pointer overflow-hidden rounded-xl"
       style={{ border: "1px solid var(--border-col)" }}
     >
       <img
         src={design.image}
         alt={design.title}
         loading="lazy"
-        className={`w-full object-cover transition-all duration-300 group-hover:scale-105 group-hover:brightness-75 ${
+        className={`w-full object-cover transition-all duration-700 ease-out group-hover:scale-105 group-hover:brightness-75 ${
           revealed ? "scale-105 brightness-75" : ""
         }`}
       />
@@ -31,7 +31,7 @@ export function DesignCard({ design }: { design: Design }) {
         }`}
         style={{ background: "rgba(0,0,0,0.35)" }}
       >
-        <p className="text-sm font-medium text-white">{design.title}</p>
+        <p className="translate-y-2 text-sm font-medium text-white transition-transform duration-300 group-hover:translate-y-0">{design.title}</p>
         {design.category && (
           <span
             className="rounded-md px-2 py-1 text-xs text-white backdrop-blur-sm"

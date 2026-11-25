@@ -27,8 +27,10 @@ export function ProjectsSection() {
       ) : (
         <div className="relative">
           <div className="grid gap-4 md:grid-cols-2">
-            {repos.slice(0, 4).map((repo) => (
-              <RepoCard key={repo.id} repo={repo} />
+            {repos.slice(0, 4).map((repo, i) => (
+              <div key={repo.id} data-reveal style={{ ["--d" as string]: `${(i % 2) * 100}ms` }}>
+                <RepoCard repo={repo} />
+              </div>
             ))}
           </div>
 
@@ -47,11 +49,11 @@ export function ProjectsSection() {
       <div className="mt-8 flex justify-center">
         <a
           href="/projects"
-          className="flex items-center gap-1.5 text-sm transition-colors"
+          className="hover-text-1 group flex items-center gap-1.5 text-sm transition-colors"
           style={{ color: "var(--text-3)" }}
         >
           Browse all repositories
-          <svg className="h-3 w-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg className="h-3 w-3 transition-transform group-hover:translate-x-1" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M3 8h10M9 4l4 4-4 4" />
           </svg>
         </a>

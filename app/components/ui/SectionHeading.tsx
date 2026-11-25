@@ -5,7 +5,7 @@ type SectionHeadingProps = {
 
 export function SectionHeading({ children, sub }: SectionHeadingProps) {
   return (
-    <div className="flex flex-col items-center text-center mb-14">
+    <div data-reveal className="flex flex-col items-center text-center mb-14">
       {sub && (
         <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.22em]" style={{ color: "var(--text-3)" }}>
           {sub}

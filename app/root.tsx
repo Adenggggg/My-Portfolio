@@ -1,5 +1,12 @@
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+import type { LinksFunction } from "react-router";
 import "./app.css";
+
+export const links: LinksFunction = () => [
+  { rel: "preconnect", href: "https://fonts.googleapis.com" },
+  { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+  { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" },
+];
 
 export default function Root() {
   return (
@@ -11,6 +18,7 @@ export default function Root() {
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
+                document.documentElement.setAttribute("data-js", "");
                 try {
                   var t = localStorage.getItem("theme") || "dark";
                   document.documentElement.className = t;

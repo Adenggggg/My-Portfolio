@@ -27,7 +27,7 @@ export default function Designs() {
 
       <div
         aria-hidden
-        className="fixed left-0 top-0 pointer-events-none z-0"
+        className="drift fixed left-0 top-0 pointer-events-none z-0"
         style={{
           width: "600px",
           height: "500px",
@@ -37,7 +37,7 @@ export default function Designs() {
 
       <div className="relative z-10 mx-auto max-w-5xl px-4 pb-24 pt-36 md:px-8">
         {/* Header */}
-        <div className="mb-14">
+        <div className="enter enter-1 mb-14">
           <p className="mb-2.5 font-mono text-[11px] uppercase tracking-[0.18em]" style={{ color: "var(--text-3)" }}>
             Portfolio — UI &amp; Visual Work
           </p>
@@ -52,14 +52,18 @@ export default function Designs() {
           </div>
         </div>
 
-        <DesignTabToggle active={activeTab} onChange={setActiveTab} />
+        <div className="enter enter-2">
+          <DesignTabToggle active={activeTab} onChange={setActiveTab} />
+        </div>
 
         {items.length === 0 ? (
           <DesignsEmptyState tab={activeTab} />
         ) : (
           <div key={activeTab} className="columns-2 gap-4 space-y-4 md:columns-3">
             {items.map((design, i) => (
-              <DesignCard key={`${design.title}-${i}`} design={design} />
+              <div key={`${design.title}-${i}`} data-reveal className="break-inside-avoid" style={{ ["--d" as string]: `${(i % 3) * 90}ms` }}>
+                <DesignCard design={design} />
+              </div>
             ))}
           </div>
         )}

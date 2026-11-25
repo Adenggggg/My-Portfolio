@@ -89,7 +89,7 @@ export default function Navbar() {
             <li key={link.label}>
               <NavLink
                 to={link.to}
-                className="relative px-4 py-2 text-sm transition-all duration-200 rounded-lg"
+                className="hover-text-1 relative px-4 py-2 text-sm transition-all duration-200 rounded-lg"
                 style={({ isActive }) => ({
                   color: isActive ? "var(--text-1)" : "var(--text-3)",
                 })}
@@ -116,7 +116,7 @@ export default function Navbar() {
           <button
             onClick={toggle}
             aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-            className="flex h-9 w-9 items-center justify-center rounded-lg transition-all duration-200 hover:scale-105"
+            className="btn-ghost flex h-9 w-9 items-center justify-center rounded-lg transition-all duration-200 hover:rotate-12"
             style={{
               border: "1px solid var(--border-col)",
               background: "var(--bg-card2)",
@@ -129,7 +129,7 @@ export default function Navbar() {
           {/* Contact CTA */}
           <a
             href="#contact"
-            className="rounded-lg px-4 py-2 text-xs font-medium transition-all duration-200"
+            className="btn-ghost rounded-lg px-4 py-2 text-xs font-medium transition-all duration-200"
             style={{
               border: "1px solid var(--border-col)",
               background: "var(--bg-card2)",
@@ -165,6 +165,18 @@ export default function Navbar() {
           </svg>
         </button>
       </nav>
+
+      {/* ── Scroll progress ── */}
+      <div
+        aria-hidden
+        className="absolute bottom-0 left-0 h-px w-full origin-left"
+        style={{
+          transform: "scaleX(var(--scroll, 0))",
+          background: "linear-gradient(90deg, transparent, rgba(120,140,255,0.8), #34d399)",
+          opacity: solid ? 1 : 0,
+          transition: "opacity .3s ease",
+        }}
+      />
 
       {/* ── Mobile menu ── */}
       <div

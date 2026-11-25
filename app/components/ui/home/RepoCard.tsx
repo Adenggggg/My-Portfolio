@@ -7,7 +7,7 @@ export function RepoCard({ repo }: { repo: Repo }) {
       href={repo.html_url}
       target="_blank"
       rel="noreferrer"
-      className="group relative flex flex-col overflow-hidden rounded-2xl transition-all duration-300"
+      className="spotlight lift group relative flex h-full flex-col overflow-hidden rounded-2xl"
       style={{ border: "1px solid var(--border-col)", background: "var(--bg-card)" }}
     >
       {/* Title bar with traffic-light dots */}
@@ -28,7 +28,7 @@ export function RepoCard({ repo }: { repo: Repo }) {
 
       {/* Header content */}
       <div className="px-5 pt-4">
-        <h3 className="text-base font-semibold" style={{ color: "var(--text-1)" }}>
+        <h3 className="text-base font-semibold transition-transform duration-300 group-hover:translate-x-0.5" style={{ color: "var(--text-1)" }}>
           {repo.name}
         </h3>
         {repo.description && (
