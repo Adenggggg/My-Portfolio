@@ -114,7 +114,7 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-2">
           {/* Theme toggle */}
           <button
-            onClick={toggle}
+            onClick={(e) => toggle({ x: e.clientX, y: e.clientY })}
             aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
             className="btn-ghost flex h-9 w-9 items-center justify-center rounded-lg transition-all duration-200 hover:rotate-12"
             style={{
@@ -123,7 +123,9 @@ export default function Navbar() {
               color: "var(--text-2)",
             }}
           >
-            {theme === "dark" ? <SunIcon /> : <MoonIcon />}
+            <span key={theme} className="flex animate-in fade-in zoom-in-50 spin-in-90 duration-500">
+                {theme === "dark" ? <SunIcon /> : <MoonIcon />}
+              </span>
           </button>
 
           {/* Contact CTA */}
@@ -218,7 +220,7 @@ export default function Navbar() {
             <div className="mt-2 flex flex-col gap-2" style={{ borderTop: "1px solid var(--border-col)", paddingTop: "12px" }}>
               {/* Theme toggle mobile */}
               <button
-                onClick={() => { toggle(); setMenuOpen(false); }}
+                onClick={(e) => { toggle({ x: e.clientX, y: e.clientY }); setMenuOpen(false); }}
                 className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm transition-all duration-200"
                 style={{
                   border: "1px solid var(--border-col)",
@@ -226,7 +228,9 @@ export default function Navbar() {
                   color: "var(--text-2)",
                 }}
               >
+                <span key={theme} className="flex animate-in fade-in zoom-in-50 spin-in-90 duration-500">
                 {theme === "dark" ? <SunIcon /> : <MoonIcon />}
+              </span>
                 {theme === "dark" ? "Light Mode" : "Dark Mode"}
               </button>
 

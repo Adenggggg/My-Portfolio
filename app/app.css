@@ -10,12 +10,10 @@
 
 html,
 body {
-  @apply bg-white dark:bg-gray-950;
-
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
-  }
+  background: var(--bg-base, #080d12);
 }
+html[data-theme="dark"]  { color-scheme: dark; }
+html[data-theme="light"] { color-scheme: light; }
 
 @theme inline {
   --font-heading: var(--font-sans);
@@ -149,20 +147,20 @@ body {
 }
 
 [data-theme="light"] {
-  --bg-base:    #f8fafc;
-  --bg-card:    #eceff1;
-  --bg-card2:   #dfe3e7;
-  --bg-card3:   #cbd2d9;
-  --border-col: rgba(31, 41, 51, 0.14);
-  --border-hov: rgba(31, 41, 51, 0.30);
-  --text-1:     #1f2933;
-  --text-2:     #3e4c59;
-  --text-3:     #616e7c;
-  --text-4:     #7b8794;
-  --grid:       rgba(31, 41, 51, 0.05);
-  --glow-a:     rgba(59, 91, 219, 0.05);
-  --glow-b:     rgba(100, 60, 200, 0.04);
-  --btn-bg:     #1f2933;
+  --bg-base:    #f5f7fb;
+  --bg-card:    #ffffff;
+  --bg-card2:   #f0f3f8;
+  --bg-card3:   #e6ebf2;
+  --border-col: rgba(15, 23, 42, 0.09);
+  --border-hov: rgba(15, 23, 42, 0.22);
+  --text-1:     #0f172a;
+  --text-2:     #334155;
+  --text-3:     #556274;
+  --text-4:     #7c8799;
+  --grid:       rgba(15, 23, 42, 0.045);
+  --glow-a:     rgba(99, 102, 241, 0.11);
+  --glow-b:     rgba(236, 72, 153, 0.07);
+  --btn-bg:     #0f172a;
   --btn-text:   #f8fafc;
 }
 
@@ -184,12 +182,55 @@ body {
   --spot:        rgba(120, 140, 255, 0.10);
   --spot-border: rgba(140, 160, 255, 0.35);
   --cursor-glow: rgba(90, 120, 255, 0.07);
+  --shadow-card: none;
+  --shadow-lift: 0 18px 40px -18px rgba(0, 0, 0, 0.45);
 }
 [data-theme="light"] {
-  --spot:        rgba(59, 91, 219, 0.07);
-  --spot-border: rgba(59, 91, 219, 0.30);
-  --cursor-glow: rgba(59, 91, 219, 0.05);
+  --spot:        rgba(99, 102, 241, 0.08);
+  --spot-border: rgba(99, 102, 241, 0.45);
+  --cursor-glow: rgba(99, 102, 241, 0.09);
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 10px 28px -14px rgba(15, 23, 42, 0.12);
+  --shadow-lift: 0 22px 44px -18px rgba(15, 23, 42, 0.22);
 }
+
+/* Light mode: cards float on soft shadows instead of relying on borders */
+[data-theme="light"] .lift,
+[data-theme="light"] .spotlight { box-shadow: var(--shadow-card); }
+[data-theme="light"] .text-shimmer {
+  background-image: linear-gradient(90deg, var(--text-1) 0%, var(--text-1) 40%, #6366f1 50%, var(--text-1) 60%, var(--text-1) 100%);
+}
+
+/* Tech/tag pills: readable on both themes */
+.tag-pill {
+  background: color-mix(in srgb, var(--tag) 14%, transparent);
+  color: var(--tag);
+}
+[data-theme="light"] .tag-pill {
+  background: color-mix(in srgb, var(--tag) 12%, white);
+  color: color-mix(in srgb, var(--tag) 55%, #0f172a);
+}
+
+/* Circular reveal when switching themes (View Transitions API) */
+::view-transition-old(root),
+::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-new(root) { animation: themeReveal .7s cubic-bezier(.65, 0, .35, 1); }
+@keyframes themeReveal {
+  from { clip-path: circle(0px at var(--tx, 50%) var(--ty, 0px)); }
+  to   { clip-path: circle(var(--tr, 150vmax) at var(--tx, 50%) var(--ty, 0px)); }
+}
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after { transition: none !important; }
+
+/* Easter egg: avatar poke + barrel roll */
+@keyframes eggPoke { 0% { transform: none } 30% { transform: scale(.88) rotate(-8deg) } 60% { transform: scale(1.06) rotate(5deg) } 100% { transform: none } }
+@keyframes eggRoll { 0% { transform: none } 50% { transform: scale(1.15) rotate(180deg) } 100% { transform: rotate(360deg) } }
+.egg-poke { animation: eggPoke .45s cubic-bezier(.34,1.56,.64,1); }
+.egg-roll { animation: eggRoll .9s cubic-bezier(.65,0,.35,1); }
+
+/* Animated success check */
+.draw-check { stroke-dasharray: 24; stroke-dashoffset: 24; animation: drawCheck .5s .2s ease-out forwards; }
+@keyframes drawCheck { to { stroke-dashoffset: 0; } }
 
 @keyframes fadeUpIn   { from { opacity: 0; transform: translateY(18px) } to { opacity: 1; transform: none } }
 @keyframes marqueeL   { from { transform: translateX(0) } to { transform: translateX(-50%) } }
@@ -234,7 +275,7 @@ body {
 .lift:hover {
   transform: translateY(-4px);
   border-color: var(--border-hov) !important;
-  box-shadow: 0 18px 40px -18px rgba(0,0,0,.45);
+  box-shadow: var(--shadow-lift) !important;
 }
 
 /* Button shine sweep */

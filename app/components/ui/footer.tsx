@@ -129,8 +129,12 @@ export default function Footer() {
             <span style={{ color: "var(--text-3)" }}>Adriane Frane</span>.
             {" "}All rights reserved.
           </p>
-          <p className="font-mono text-[10px] uppercase tracking-[0.16em]" style={{ color: "var(--text-4)" }}>
-            Built with React Router v7
+          <p
+            className="font-mono text-[10px] uppercase tracking-[0.16em]"
+            style={{ color: "var(--text-4)" }}
+            title="psst… ↑ ↑ ↓ ↓ ← → ← → B A"
+          >
+            Built with React Router v7 <span className="opacity-40 transition-opacity hover:opacity-100">· ↑↑↓↓←→←→BA</span>
           </p>
         </div>
 

@@ -2,59 +2,12 @@
 
 import { useState } from "react";
 
-type Project = {
-  title: string;
-  description: string;
-  link: string;
-  github: string;
-  tags: string[];
-  category: string;
-  featured?: boolean;
-};
-
-const PROJECTS: Project[] = [
-  {
-    title: "My Portfolio",
-    description:
-      "Personal developer portfolio site showcasing projects, skills, and background.",
-    link: "https://adriane-dev.vercel.app",
-    github: "https://github.com/Adenggggg/My-Portfolio",
-    tags: ["TypeScript", "React"],
-    category: "Portfolio",
-  },
-  {
-    title: "Smiski",
-    description:
-      "A dating request app — lets users send, accept, or decline romantic interest requests in a clean, simple flow.",
-    link: "https://smiski-psi.vercel.app/",
-    github: "https://github.com/Adenggggg/Smiski",
-    tags: ["TypeScript", "React", "Remix"],
-    category: "Dating App",
-  },
-  {
-    title: "Saving Tracker",
-    description:
-      "A group savings monitoring app for tracking shared savings goals with friends, family, or a team.",
-    link: "https://saving-tracker-gules.vercel.app/",
-    github: "https://github.com/Adenggggg/Saving-Tracker",
-    tags: ["TypeScript", "React", "Remix"],
-    category: "Web App",
-  },
-    {
-    title: "UNKNOWN",
-    description:
-      "A cozy, mobile-first interactive world to explore: step into a tiny house, drag the moon over a midnight beach, play small games, and snap a photobooth strip, all with soft sound and quiet secrets to find",
-    link: "https://unknown-universe.vercel.app/",
-    github: "https://github.com/Adenggggg/Unknown",
-    tags: ["TypeScript", "React", "Remix"],
-    category: "Web App",
-  },
-];
+import { PROJECTS, type Project } from "~/data/projects";
 
 const TAG_COLORS: Record<string, { bg: string; text: string }> = {
   React: { bg: "#0e2233", text: "#61DAFB" },
   TypeScript: { bg: "#0e1a2e", text: "#5b9bd5" },
-  JavaScript: { bg: "#2a2200", text: "#F7DF1E" },
+  JavaScript: { bg: "#2a2200", text: "#e5c800" },
   "Node.js": { bg: "#0e2010", text: "#6bbf6b" },
   PHP: { bg: "#1a1a2e", text: "#a0a8d0" },
   ".NET": { bg: "#1a1030", text: "#9b7fe8" },
@@ -68,15 +21,11 @@ const TAG_COLORS: Record<string, { bg: string; text: string }> = {
 };
 
 function TagPill({ name }: { name: string }) {
-  const colors = TAG_COLORS[name] ?? {
-    bg: "#1a1f2e",
-    text: "rgba(255,255,255,0.5)",
-  };
-
+  const color = TAG_COLORS[name]?.text ?? "#94a3b8";
   return (
     <span
-      className="rounded-md px-2 py-0.5 text-xs font-medium"
-      style={{ backgroundColor: colors.bg, color: colors.text }}
+      className="tag-pill rounded-md px-2 py-0.5 text-xs font-medium"
+      style={{ ["--tag" as string]: color }}
     >
       {name}
     </span>

@@ -1,6 +1,35 @@
 import { GITHUB_USERNAME } from "~/data/social-links";
 import { useGitHubStats } from "~/hooks/useGitHubStats";
 import { useAnimatedCount } from "~/hooks/useAnimatedCount";
+import { useEffect, useState } from "react";
+
+// What the avatar says when you keep poking it
+const POKE_LINES: Record<number, string> = {
+  3: "Hey, that tickles 😆",
+  5: "I'm a picture, not a button.",
+  7: "Okay okay, you got me. Hire me? 👉👈",
+  10: "Fine. Secret: type “hire” anywhere 😉",
+  15: "…you really have nothing to do, huh?",
+};
+
+function usePokes() {
+  const [pokes, setPokes] = useState(0);
+  const [bubble, setBubble] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (POKE_LINES[pokes]) setBubble(POKE_LINES[pokes]);
+  }, [pokes]);
+
+  useEffect(() => {
+    if (!bubble) return;
+    const t = setTimeout(() => setBubble(null), 2600);
+    return () => clearTimeout(t);
+  }, [bubble]);
+
+  const poke = () => setPokes((p) => p + 1);
+
+  return { pokes, bubble, poke, roll: pokes === 7 || pokes === 15 };
+}
 
 function StatBlock({ label, value }: { label: string; value: number }) {
   const count = useAnimatedCount(value);
@@ -21,6 +50,7 @@ function StatBlock({ label, value }: { label: string; value: number }) {
 
 export function Hero() {
   const stats = useGitHubStats(GITHUB_USERNAME);
+  const { pokes, bubble, poke, roll } = usePokes();
   const yearsActive = Math.max(0, new Date().getFullYear() - 2021);
 
   const ctaButtons = [
@@ -32,7 +62,25 @@ export function Hero() {
   return (
     <section className="flex flex-col items-center pb-12 pt-28 text-center md:pt-32">
       {/* Avatar */}
-      <div className="enter enter-1 relative h-24 w-24 md:h-28 md:w-28">
+      <div
+        className="enter enter-1 relative z-10 h-24 w-24 cursor-pointer select-none md:h-28 md:w-28"
+        onClick={poke}
+        title="Don't poke me"
+      >
+        {/* Speech bubble */}
+        <div
+          aria-live="polite"
+          className={`pointer-events-none absolute left-1/2 top-full z-20 mt-3 -translate-x-1/2 whitespace-nowrap rounded-xl px-3 py-2 text-xs font-medium shadow-lg transition-all duration-300 ${
+            bubble ? "translate-y-0 opacity-100" : "-translate-y-1 opacity-0"
+          }`}
+          style={{ border: "1px solid var(--border-hov)", background: "var(--bg-card)", color: "var(--text-1)" }}
+        >
+          {bubble}
+          <span
+            className="absolute bottom-full left-1/2 h-2 w-2 -translate-x-1/2 translate-y-1 rotate-45"
+            style={{ borderLeft: "1px solid var(--border-hov)", borderTop: "1px solid var(--border-hov)", background: "var(--bg-card)" }}
+          />
+        </div>
         <div
           aria-hidden
           className="pulse-glow absolute -inset-6 rounded-full blur-2xl"
@@ -48,7 +96,10 @@ export function Hero() {
           <div className="h-full w-full rounded-[24px]" style={{ background: "var(--bg-base)" }} />
         </div>
         <div
-          className="absolute inset-0.75 flex items-center justify-center overflow-hidden rounded-[22px] text-2xl font-bold"
+          key={pokes}
+          className={`absolute inset-0.75 flex items-center justify-center overflow-hidden rounded-[22px] text-2xl font-bold ${
+            pokes === 0 ? "" : roll ? "egg-roll" : "egg-poke"
+          }`}
           style={{ border: "1px solid var(--border-col)", background: "var(--bg-card2)", color: "var(--text-3)" }}
         >
           AF

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { fetchGitHubCached } from "~/lib/github-cache";
 
 export type GitHubStats = { repos: number; followers: number; following: number };
 
@@ -8,8 +9,7 @@ export function useGitHubStats(username: string) {
   useEffect(() => {
     let cancelled = false;
 
-    fetch(`https://api.github.com/users/${username}`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error("GitHub stats request failed"))))
+    fetchGitHubCached<Record<string, unknown>>(`https://api.github.com/users/${username}`)
       .then((d) => {
         if (cancelled) return;
         setStats({
