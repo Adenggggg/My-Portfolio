@@ -2,9 +2,11 @@ import { SectionHeading } from "~/components/ui/SectionHeading";
 import { RepoCard } from "~/components/ui/home/RepoCard";
 import { useRepos } from "~/hooks/useRepos";
 import { GITHUB_USERNAME } from "~/data/social-links";
+import { useSmoothNav } from "~/lib/smooth-nav";
 
 export function ProjectsSection() {
   const { repos, loading } = useRepos(GITHUB_USERNAME);
+  const go = useSmoothNav();
 
   return (
     <section className="py-24">
@@ -47,13 +49,9 @@ export function ProjectsSection() {
       )}
 
       <div className="mt-8 flex justify-center">
-        <a
-          href="/projects"
-          className="hover-text-1 group flex items-center gap-1.5 text-sm transition-colors"
-          style={{ color: "var(--text-3)" }}
-        >
-          Browse all repositories
-          <svg className="h-3 w-3 transition-transform group-hover:translate-x-1" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+        <a href="/projects" onClick={go("/projects")} className="btn btn-secondary px-5 py-2.5 text-sm">
+          Browse all projects
+          <svg className="h-3 w-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M3 8h10M9 4l4 4-4 4" />
           </svg>
         </a>

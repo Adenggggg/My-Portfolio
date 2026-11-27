@@ -112,8 +112,7 @@ export function ContactForm() {
         <button
           type="button"
           onClick={() => setStatus("idle")}
-          className="btn-ghost mt-8 rounded-xl px-5 py-2.5 text-sm"
-          style={{ border: "1px solid var(--border-col)", background: "var(--bg-card2)", color: "var(--text-2)" }}
+          className="btn btn-secondary mt-8 px-5 py-2.5 text-sm"
         >
           Send another message
         </button>
@@ -224,8 +223,7 @@ export function ContactForm() {
         <button
           type="submit"
           disabled={status === "sending"}
-          className="btn-shine group flex items-center gap-2 rounded-xl px-7 py-3.5 text-sm font-semibold transition-all duration-300 hover:-translate-y-px disabled:opacity-60"
-          style={{ background: "var(--btn-bg)", color: "var(--btn-text)" }}
+          className="btn btn-primary btn-shine group px-7 py-3.5 text-sm font-semibold disabled:opacity-60"
         >
           {status === "sending" ? (
             <>

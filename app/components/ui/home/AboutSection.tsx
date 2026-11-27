@@ -4,7 +4,7 @@ const TRAITS = ["Problem Solver", "Detail-Oriented", "Fast Learner", "Creative",
 
 export function AboutSection() {
   return (
-    <section className="relative py-24">
+    <section id="about" className="relative py-24">
       <div className="relative flex flex-col items-center text-center">
         <SectionHeading sub="01 — who I am">About me.</SectionHeading>
         <div data-reveal className="max-w-2xl space-y-5 text-base leading-[1.9]" style={{ color: "var(--text-2)" }}>

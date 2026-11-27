@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { NavLink } from "react-router";
 import { useTheme } from "~/lib/theme";
+import { useSmoothNav } from "~/lib/smooth-nav";
 
 const navLinks = [
   { label: "Home",     to: "/home"     },
@@ -35,6 +36,7 @@ function MoonIcon() {
 
 export default function Navbar() {
   const { theme, toggle } = useTheme();
+  const go = useSmoothNav();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -76,6 +78,7 @@ export default function Navbar() {
         {/* ── Logo ── */}
         <NavLink
           to="/home"
+          onClick={go("/home")}
           className="group flex items-center gap-2 text-sm font-semibold tracking-tight transition-colors"
           style={{ color: "var(--text-1)" }}
         >
@@ -89,6 +92,7 @@ export default function Navbar() {
             <li key={link.label}>
               <NavLink
                 to={link.to}
+                onClick={go(link.to)}
                 className="hover-text-1 relative px-4 py-2 text-sm transition-all duration-200 rounded-lg"
                 style={({ isActive }) => ({
                   color: isActive ? "var(--text-1)" : "var(--text-3)",
@@ -116,12 +120,7 @@ export default function Navbar() {
           <button
             onClick={(e) => toggle({ x: e.clientX, y: e.clientY })}
             aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-            className="btn-ghost flex h-9 w-9 items-center justify-center rounded-lg transition-all duration-200 hover:rotate-12"
-            style={{
-              border: "1px solid var(--border-col)",
-              background: "var(--bg-card2)",
-              color: "var(--text-2)",
-            }}
+            className="btn btn-icon !h-9 !w-9"
           >
             <span key={theme} className="flex animate-in fade-in zoom-in-50 spin-in-90 duration-500">
                 {theme === "dark" ? <SunIcon /> : <MoonIcon />}
@@ -129,16 +128,11 @@ export default function Navbar() {
           </button>
 
           {/* Contact CTA */}
-          <a
-            href="#contact"
-            className="btn-ghost rounded-lg px-4 py-2 text-xs font-medium transition-all duration-200"
-            style={{
-              border: "1px solid var(--border-col)",
-              background: "var(--bg-card2)",
-              color: "var(--text-2)",
-            }}
-          >
+          <a href="/home#contact" onClick={go("/home#contact")} className="btn btn-primary btn-shine px-4 py-2 text-xs">
             Contact Me
+            <svg className="h-3 w-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M3 8h10M9 4l4 4-4 4" />
+            </svg>
           </a>
         </div>
 
@@ -198,7 +192,7 @@ export default function Navbar() {
               <NavLink
                 key={link.label}
                 to={link.to}
-                onClick={() => setMenuOpen(false)}
+                onClick={go(link.to, () => setMenuOpen(false))}
                 className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm transition-all duration-200"
                 style={({ isActive }) => ({
                   background: isActive ? "var(--bg-card)" : "transparent",
@@ -236,14 +230,9 @@ export default function Navbar() {
 
               {/* Contact mobile */}
               <a
-                href="#contact"
-                onClick={() => setMenuOpen(false)}
-                className="flex w-full items-center justify-center rounded-lg py-3 text-sm transition-all"
-                style={{
-                  border: "1px solid var(--border-col)",
-                  background: "var(--bg-card2)",
-                  color: "var(--text-2)",
-                }}
+                href="/home#contact"
+                onClick={go("/home#contact", () => setMenuOpen(false))}
+                className="btn btn-primary w-full py-3 text-sm"
               >
                 Contact Me
               </a>

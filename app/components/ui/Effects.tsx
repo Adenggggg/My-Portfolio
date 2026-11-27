@@ -51,26 +51,37 @@ export function Effects() {
     };
   }, []);
 
-  // Scroll reveal — re-scans on navigation and when async content (e.g. GitHub repos) mounts
+  // Scroll reveal — a plain position check (IntersectionObserver missed elements that moved
+  // into view through layout shifts, e.g. cards growing once their previews load).
+  // Re-checks on scroll, resize, DOM changes (async GitHub repos) and late layout settling.
   useEffect(() => {
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            io.unobserve(entry.target);
-          }
-        }
-      },
-      { rootMargin: "0px 0px -8% 0px" }
-    );
-    const scan = () =>
-      document.querySelectorAll("[data-reveal]:not(.is-visible)").forEach((el) => io.observe(el));
-    scan();
-    const mo = new MutationObserver(scan);
+    let frame = 0;
+    const check = () => {
+      frame = 0;
+      const limit = window.innerHeight * 0.92;
+      document.querySelectorAll<HTMLElement>("[data-reveal]:not(.is-visible)").forEach((el) => {
+        const r = el.getBoundingClientRect();
+        if (r.top < limit && r.bottom > 0) el.classList.add("is-visible");
+      });
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(check);
+    };
+
+    schedule();
+    const settle = [setTimeout(schedule, 300), setTimeout(schedule, 1200)];
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    window.addEventListener("load", schedule);
+    const mo = new MutationObserver(schedule);
     mo.observe(document.body, { childList: true, subtree: true });
+
     return () => {
-      io.disconnect();
+      cancelAnimationFrame(frame);
+      settle.forEach(clearTimeout);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      window.removeEventListener("load", schedule);
       mo.disconnect();
     };
   }, [location.pathname]);
