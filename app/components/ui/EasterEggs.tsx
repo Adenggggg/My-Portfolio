@@ -144,7 +144,7 @@ export function EasterEggs() {
   return (
     <div
       aria-live="polite"
-      className={`pointer-events-none fixed bottom-6 left-1/2 z-[60] -translate-x-1/2 transition-all duration-300 ${
+      className={`pointer-events-none fixed bottom-6 left-1/2 z-60 -translate-x-1/2 transition-all duration-300 ${
         toast ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
       }`}
     >
